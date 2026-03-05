@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Colors from Chumme v3 (Pink-toned) */
+  --color-brand-core: #a53860;
+  --color-brand-vibrant: #d3427b;
+  --color-brand-burgundy: #3a0519;
+  --color-brand-dark: #670d2f;
+  --color-brand-light: #ef88ad;
+
+  --color-background-primary: #0a0a0a;
+  --color-background-secondary: #141414;
+  --color-background-tertiary: #1a1a1a;
+  --color-background-elevated: #1f1f1f;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.8);
+  --color-text-tertiary: rgba(255, 255, 255, 0.6);
+  --color-text-quaternary: rgba(255, 255, 255, 0.4);
+
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.05);
+  --color-border-strong: rgba(255, 255, 255, 0.2);
+
+  --font-sans: "Poppins", var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono);
+
+  /* Custom Utilities */
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Gradient Text */
+.text-gradient {
+  background: linear-gradient(to right, #6366f1, #a855f7, #d3427b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-pink {
+  background: linear-gradient(to right, #a53860, #d3427b, #ef88ad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Brand Loader Animations */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes dot-stagger {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-dot-stagger-0 {
+  animation: dot-stagger 1.5s ease-in-out infinite;
+}
+
+.animate-dot-stagger-1 {
+  animation: dot-stagger 1.5s ease-in-out infinite 0.2s;
+}
+
+.animate-dot-stagger-2 {
+  animation: dot-stagger 1.5s ease-in-out infinite 0.4s;
+}
