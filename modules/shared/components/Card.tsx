@@ -10,7 +10,7 @@ export const Card = ({ children, className, variant = "glass" }: CardProps) => {
   const baseStyles = "rounded-2xl p-6 transition-all duration-300";
 
   const variants = {
-    glass: "glass hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
+    glass: "glass hover:shadow-xl",
     "glass-light": "glass-light",
     solid: "bg-background-secondary border border-border-default",
   };

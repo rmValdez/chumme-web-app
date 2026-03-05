@@ -25,7 +25,7 @@ export const Button = ({
     secondary:
       "bg-background-tertiary text-text-primary hover:bg-background-elevated",
     ghost:
-      "bg-transparent text-text-secondary hover:bg-white/5 hover:text-text-primary",
+      "bg-transparent text-text-secondary hover:bg-background-tertiary hover:text-text-primary",
     outline:
       "bg-transparent border border-border-default text-text-primary hover:border-brand-vibrant hover:text-brand-vibrant",
   };

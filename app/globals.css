@@ -2,25 +2,25 @@
 
 @theme inline {
   /* Colors from Chumme v3 (Pink-toned) */
-  --color-brand-core: #a53860;
-  --color-brand-vibrant: #d3427b;
-  --color-brand-burgundy: #3a0519;
-  --color-brand-dark: #670d2f;
-  --color-brand-light: #ef88ad;
+  --color-brand-core: var(--brand-core);
+  --color-brand-vibrant: var(--brand-vibrant);
+  --color-brand-burgundy: var(--brand-burgundy);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
 
-  --color-background-primary: #0a0a0a;
-  --color-background-secondary: #141414;
-  --color-background-tertiary: #1a1a1a;
-  --color-background-elevated: #1f1f1f;
+  --color-background-primary: var(--background-primary);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-background-elevated: var(--background-elevated);
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: rgba(255, 255, 255, 0.8);
-  --color-text-tertiary: rgba(255, 255, 255, 0.6);
-  --color-text-quaternary: rgba(255, 255, 255, 0.4);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-quaternary: var(--text-quaternary);
 
-  --color-border-default: rgba(255, 255, 255, 0.1);
-  --color-border-light: rgba(255, 255, 255, 0.05);
-  --color-border-strong: rgba(255, 255, 255, 0.2);
+  --color-border-default: var(--border-default);
+  --color-border-light: var(--border-light);
+  --color-border-strong: var(--border-strong);
 
   --font-sans: "Poppins", var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
@@ -31,13 +31,54 @@
 }
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
+  /* Light Theme Defaults */
+  --brand-core: #a53860;
+  --brand-vibrant: #d3427b;
+  --brand-burgundy: #8a1740;
+  --brand-dark: #670d2f;
+  --brand-light: #ef88ad;
+
+  --background-primary: #ffffff;
+  --background-secondary: #f4f4f5;
+  --background-tertiary: #e4e4e7;
+  --background-elevated: #ffffff;
+
+  --text-primary: #09090b;
+  --text-secondary: #09090bCC; /* 80% */
+  --text-tertiary: #09090b99; /* 60% */
+  --text-quaternary: #09090b66; /* 40% */
+
+  --border-default: #09090b1A; /* 10% */
+  --border-light: #09090b0D; /* 5% */
+  --border-strong: #09090b33; /* 20% */
+}
+
+.dark {
+  /* Dark Theme Overrides */
+  --brand-core: #a53860;
+  --brand-vibrant: #d3427b;
+  --brand-burgundy: #3a0519;
+  --brand-dark: #670d2f;
+  --brand-light: #ef88ad;
+
+  --background-primary: #0a0a0a;
+  --background-secondary: #141414;
+  --background-tertiary: #1a1a1a;
+  --background-elevated: #1f1f1f;
+
+  --text-primary: #ffffff;
+  --text-secondary: #ffffffCC;
+  --text-tertiary: #ffffff99;
+  --text-quaternary: #ffffff66;
+
+  --border-default: #ffffff1A;
+  --border-light: #ffffff0D;
+  --border-strong: #ffffff33;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--background-primary);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

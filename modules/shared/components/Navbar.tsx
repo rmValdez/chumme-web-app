@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "./Button";
 import { useAuthStore } from "@/modules/shared/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/modules/shared/components/ThemeToggle";
 
 export const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuthStore();
@@ -79,6 +80,7 @@ export const Navbar = () => {
               </Link>
             </>
           )}
+          <ThemeToggle />
         </div>
       </div>
     </nav>

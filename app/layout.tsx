@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthInitializer } from "@/components/AuthInitializer";
+import { ThemeProvider } from "@/modules/shared/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,9 +21,42 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Chumme | Premium Social Platform",
+  title: {
+    template: "%s | Chumme",
+    default: "Chumme | Premium Social Platform",
+  },
   description:
-    "Experience the next generation of social interaction with Chumme.",
+    "Experience the next generation of social interaction with Chumme. A premium mobile and web ecosystem.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.chumme.app",
+  ),
+  openGraph: {
+    title: "Chumme | Premium Social Platform",
+    description:
+      "Experience the next generation of social interaction with Chumme.",
+    url: "https://www.chumme.app",
+    siteName: "Chumme",
+    images: [
+      {
+        url: "/og-image.png", // Fallback, will require a real image in public/
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chumme | Premium Social Platform",
+    description:
+      "Experience the next generation of social interaction with Chumme.",
+    images: ["/og-image.png"], // Standardized OG image
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -31,11 +65,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background-primary text-text-primary`}
       >
-        <AuthInitializer>{children}</AuthInitializer>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthInitializer>{children}</AuthInitializer>
+        </ThemeProvider>
       </body>
     </html>
   );
