@@ -1,6 +1,6 @@
 import { useApiQuery } from "@/modules/shared/hooks/useApiQuery";
 import { useApiMutation } from "@/modules/shared/hooks/useApiMutation";
-import { Circle, circlesApi } from "../api/circles-api";
+import { Circle } from "../api/circles-api";
 import { useQueryClient } from "@tanstack/react-query";
 
 export type { Circle };
@@ -22,7 +22,7 @@ export function useCircleQuery(circleId: string) {
 export function useJoinCircleMutation() {
   const queryClient = useQueryClient();
 
-  return useApiMutation<any, Error, { circleId: string }>({
+  return useApiMutation<{ success: boolean }, Error, { circleId: string }>({
     onSuccess: (_, variables) => {
       // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ["circles"] });
