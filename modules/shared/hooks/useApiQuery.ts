@@ -21,10 +21,16 @@ export function useApiQuery<TData, TError = Error>(
     queryKey,
     queryFn: async (): Promise<TData> => {
       // Extract params from the second element of the queryKey, if it's an object
-      const params = typeof queryKey[1] === "object" ? queryKey[1] : undefined;
+      const params =
+        queryKey.length > 1 &&
+        queryKey[1] &&
+        typeof queryKey[1] === "object" &&
+        !Array.isArray(queryKey[1])
+          ? (queryKey[1] as Record<string, unknown>)
+          : undefined;
       const response: ApiResponse<TData> = await api.get<TData>(
         endpoint,
-        params as any,
+        params,
       );
 
       if (!response.ok || !response.data) {

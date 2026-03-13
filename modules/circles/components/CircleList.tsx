@@ -3,7 +3,6 @@
 import React from "react";
 import { CircleCard } from "./CircleCard";
 import { Circle } from "../hooks/useCircles";
-import { FlexBox } from "@/modules/shared/components/FlexBox";
 import { ChummeLoader } from "@/modules/shared/components/ChummeLoader";
 import { Alert } from "@/modules/shared/components/Alert";
 

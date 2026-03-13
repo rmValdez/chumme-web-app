@@ -21,15 +21,19 @@ export const ProfileForm = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (profile) {
+    if (!profile) return;
+
+    const timeoutId = window.setTimeout(() => {
       setFormData({
         displayName: profile.displayName || "",
         bio: profile.bio || "",
         location: profile.location || "",
         website: profile.website || "",
       });
-    }
-  }, [profile, setFormData]);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

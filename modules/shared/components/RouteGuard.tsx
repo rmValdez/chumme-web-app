@@ -19,11 +19,20 @@ export function RouteGuard({ children, requireAuth = true }: RouteGuardProps) {
     if (isLoading) return;
 
     if (requireAuth && !isAuthenticated) {
-      router.push("/");
+      router.replace("/auth");
     }
 
-    if (!requireAuth && isAuthenticated && pathname === "/") {
-      router.push("/dashboard");
+    if (
+      !requireAuth &&
+      isAuthenticated &&
+      (pathname === "/" ||
+        pathname.startsWith("/auth") ||
+        pathname.startsWith("/register") ||
+        pathname.startsWith("/forgot-password") ||
+        pathname.startsWith("/verify-email") ||
+        pathname.startsWith("/onboarding"))
+    ) {
+      router.replace("/dashboard");
     }
   }, [isAuthenticated, isLoading, requireAuth, router, pathname]);
 
