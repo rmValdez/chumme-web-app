@@ -4,26 +4,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
+
 import {
-Home, Compass, Users, Star, UserPlus, MessageSquare,
-User, Settings, Bell, Search, Sun, Moon, LogOut,
+  Bell, Search, Sun, Moon, LogOut,
 } from "lucide-react";
-const NAV_ITEMS = [
-{ label: "Dashboard",       href: "/dashboard",                    icon: Home },
-{ label: "Discover",        href: "/dashboard/discover",           icon: Compass },
-{ label: "Communities",     href: "/dashboard/communities",        icon: Users },
-{ label: "Entertainment",   href: "/dashboard/entertainment",      icon: Star },
-{ label: "Collaborations",  href: "/dashboard/collaborations",     icon: UserPlus },
-{ label: "Chumme AI Chat",  href: "/dashboard/ai-chat",            icon: MessageSquare },
-{ label: "Profile",         href: "/dashboard/profile",            icon: User },
-{ label: "Settings",        href: "/dashboard/settings",           icon: Settings },
-];
+import { NAV_ITEMS } from "@/modules/dashboard/constants/nav-items";
+
+
 interface DashboardLayoutProps {
 children: React.ReactNode;
 }
 export function DashboardLayout({ children }: DashboardLayoutProps) {
 const pathname = usePathname();
-const [isDark, setIsDark] = useState(false);
+const { resolvedTheme, setTheme } = useTheme();
+const isDark = resolvedTheme === "dark";
+
 const [search, setSearch] = useState("");
 return (
 <div className={`min-h-screen flex ${isDark ? "bg-gradient-to-br from-[#0a0a0a] via-[#1a0510] to-[#0a0a0a]" : "bg-gradient-to-br from-[#fce7f3] via-[#fce1ed] to-[#f3e8ff]"}`}>
@@ -66,7 +62,8 @@ className={`w-64 flex-shrink-0 flex flex-col border-r h-screen sticky top-0 ${is
     <div className={`p-4 border-t space-y-3 ${isDark ? "border-gray-700" : "border-gray-200"}`}>
       <div className={`rounded-xl p-1 flex gap-1 ${isDark ? "bg-gray-800" : "bg-gray-100"}`}>
         <button
-          onClick={() => setIsDark(false)}
+          onClick={() => setTheme("light")}
+
           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all ${
             !isDark
               ? "bg-white text-gray-900 shadow-sm"
@@ -76,7 +73,8 @@ className={`w-64 flex-shrink-0 flex flex-col border-r h-screen sticky top-0 ${is
           <Sun className="w-4 h-4" /> Light
         </button>
         <button
-          onClick={() => setIsDark(true)}
+          onClick={() => setTheme("dark")}
+
           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all ${
             isDark
               ? "bg-gray-700 text-white shadow-sm"
