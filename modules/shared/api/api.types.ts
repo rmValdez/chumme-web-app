@@ -27,6 +27,16 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface VerificationRequiredResponse {
+  requiresVerification: true;
+  message: string;
+  user: {
+    email: string;
+    isEmailVerified: false;
+    otpExpiry: string;
+  };
+}
+
 export interface RegisterRequest {
   email: string;
   username: string;

@@ -2,8 +2,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAuthStore } from "@/modules/shared/store/useAuthStore";
 import { useTheme } from "next-themes";
 
 import {
@@ -17,10 +18,16 @@ children: React.ReactNode;
 }
 export function DashboardLayout({ children }: DashboardLayoutProps) {
 const pathname = usePathname();
+const router = useRouter();
+const logout = useAuthStore((s) => s.logout);
 const { resolvedTheme, setTheme } = useTheme();
 const isDark = resolvedTheme === "dark";
 
 const [search, setSearch] = useState("");
+const handleSignOut = async () => {
+  await logout();
+  router.replace("/auth");
+};
 return (
 <div className={`min-h-screen flex ${isDark ? "bg-gradient-to-br from-[#0a0a0a] via-[#1a0510] to-[#0a0a0a]" : "bg-gradient-to-br from-[#fce7f3] via-[#fce1ed] to-[#f3e8ff]"}`}>
 {/* ── Sidebar ── */}
@@ -84,8 +91,9 @@ className={`w-64 flex-shrink-0 flex flex-col border-r h-screen sticky top-0 ${is
           <Moon className="w-4 h-4" /> Dark
         </button>
       </div>
-      <Link
-        href="/auth"
+      <button
+        type="button"
+        onClick={handleSignOut}
         className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all w-full ${
           isDark
             ? "text-gray-400 hover:bg-gray-800 hover:text-red-400"
@@ -94,7 +102,7 @@ className={`w-64 flex-shrink-0 flex flex-col border-r h-screen sticky top-0 ${is
       >
         <LogOut className="w-4 h-4" />
         Sign Out
-      </Link>
+      </button>
     </div>
   </motion.aside>
 
