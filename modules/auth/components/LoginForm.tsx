@@ -250,7 +250,7 @@ export function LoginForm() {
                   Don&apos;t have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => router.push("/register")}
+                    onClick={() => router.push("/onboarding/welcome")}
                     className="text-[#A53860] hover:text-[#670D2F] font-semibold transition-colors"
                   >
                     Sign Up
