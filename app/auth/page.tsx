@@ -45,8 +45,33 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     try {
-      await login(email, password);
-      router.replace("/dashboard");
+      const res = await (login as unknown as (
+        email: string,
+        password: string,
+      ) => Promise<unknown>)(email, password);
+
+      if (res && typeof res === "object") {
+        const result = res as {
+          requiresVerification?: boolean;
+          error?: unknown;
+          message?: unknown;
+          accessToken?: unknown;
+        };
+
+        if (result.requiresVerification) {
+          router.push("/verify-email");
+          return;
+        }
+
+        const message = typeof result.message === "string" ? result.message : "";
+        const accessToken =
+          typeof result.accessToken === "string" ? result.accessToken : "";
+
+        if (result.error || (message && !accessToken)) {
+          setError(message || "Invalid credentials");
+          return;
+        }
+      }
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Invalid credentials";
