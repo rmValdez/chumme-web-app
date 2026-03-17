@@ -7,6 +7,7 @@ import { Plus, Edit, Trash2, X, MapPin, Users, Grid3x3, Activity, AlertTriangle,
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useGetCommunitiesCategories, useCreateCommunitiesCategory, useCreateSubCategory, communitiesKeys } from "@/modules/communities/hooks/useCommunities";
 import { useQueryClient } from "@tanstack/react-query";
+import type { ChummeCategory } from "@/modules/community/api/communities-api";
 
 interface Country {
   id: string;
@@ -67,6 +68,18 @@ export function CommunityControlCenter() {
 
   const queryClient = useQueryClient();
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useGetCommunitiesCategories();
+  const categoriesDataShape = categoriesData as unknown as {
+    data?: unknown;
+    categories?: unknown;
+  };
+  const communitiesCategories = Array.isArray(categoriesData)
+    ? (categoriesData as ChummeCategory[])
+    : Array.isArray(categoriesDataShape?.data)
+    ? (categoriesDataShape.data as ChummeCategory[])
+    : Array.isArray(categoriesDataShape?.categories)
+    ? (categoriesDataShape.categories as ChummeCategory[])
+    : [];
+  console.log("[communities] raw categoriesData:", categoriesData);
   const { mutate: createCommunitiesCategory, isPending: creatingCategory } = useCreateCommunitiesCategory({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...communitiesKeys.categories()] });
@@ -83,7 +96,9 @@ export function CommunityControlCenter() {
   });
   const isSubmitting = creatingCategory || creatingSubcategory;
 
-  const filteredCategories = (categoriesData ?? []).filter((cat) => cat.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredCategories = communitiesCategories.filter((cat) =>
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleCreate = () => {
     if (modalType === "country") {
@@ -102,7 +117,7 @@ export function CommunityControlCenter() {
       });
     } else if (modalType === "community") {
       if (!communityName.trim() || !selectedCategory) return;
-      const parentCategory = (categoriesData ?? []).find((c) => c.name === selectedCategory);
+      const parentCategory = communitiesCategories.find((c) => c.name === selectedCategory);
       createSubcategory({
         endpoint: "/api/v1/chumme-subcategories/create",
         method: "POST",
@@ -278,10 +293,10 @@ export function CommunityControlCenter() {
                     {categoriesError && !categoriesLoading && (
                       <tr><td colSpan={3} className="px-6 py-8 text-center text-red-400 text-sm">Failed to load categories. Please try again.</td></tr>
                     )}
-                    {!categoriesLoading && !categoriesError && (categoriesData?.length ?? 0) === 0 && (
+                    {!categoriesLoading && !categoriesError && communitiesCategories.length === 0 && (
                       <tr><td colSpan={3} className={`px-6 py-8 text-center text-sm ${isDarkMode ? "text-gray-500" : "text-gray-400"}`}>No countries yet.</td></tr>
                     )}
-                    {!categoriesLoading && (categoriesData ?? []).map((category) => (
+                    {!categoriesLoading && communitiesCategories.map((category) => (
                       <tr key={category.id} className={`border-t ${isDarkMode ? "border-gray-700/50" : "border-gray-200/50"}`}>
                         <td className={`px-6 py-4 ${isDarkMode ? "text-white" : "text-gray-900"} font-medium`}>{category.name}</td>
                         <td className={`px-6 py-4 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>{category.chummeTraits ?? <span className="italic opacity-40">—</span>}</td>
@@ -651,7 +666,7 @@ export function CommunityControlCenter() {
                       } border focus:border-[#A53860] focus:ring-2 focus:ring-[#A53860]/10`}
                     >
                       <option value="">Select Category</option>
-                      {(categoriesData ?? []).map((category) => (
+                      {communitiesCategories.map((category) => (
                         <option key={category.id} value={category.name}>{category.name}</option>
                       ))}
                     </select>

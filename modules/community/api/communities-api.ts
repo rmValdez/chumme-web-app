@@ -46,7 +46,7 @@ export const communitiesApi = {
    * Fetches the communities categories list.
    */
   getCommunitiesCategories: (): Promise<ApiResponse<ChummeCategory[]>> =>
-    api.get("/api/v1/chumme-categories/communities"),
+    api.get("/api/v1/chumme-categories/specialized/COMMUNITIES"),
 
   /**
    * GET /api/v1/chumme-subcategories/category/:categoryId
