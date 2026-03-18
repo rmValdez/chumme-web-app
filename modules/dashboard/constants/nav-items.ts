@@ -1,3 +1,4 @@
+import type React from "react";
 import {
   Home,
   Compass,
@@ -7,13 +8,36 @@ import {
   MessageSquare,
   User,
   Settings,
+  Activity,
+  LayoutGrid,
 } from "lucide-react";
 
-export const NAV_ITEMS = [
-  { label: "Dashboard", href: "/dashboard", icon: Home },
+export interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  children?: NavItem[];
+}
+
+export const NAV_ITEMS: NavItem[] = [
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: Home,
+    children: [
+      { label: "Platform Ingestion", href: "/dashboard/platform-ingestion", icon: Activity },
+    ],
+  },
   { label: "Discover", href: "/dashboard/discover", icon: Compass },
-  { label: "Communities", href: "/dashboard/communities", icon: Users },
-  { label: "Entertainment", href: "/dashboard/entertainment", icon: Star },
+  {
+    label: "Categories",
+    href: "#",
+    icon: LayoutGrid,
+    children: [
+      { label: "Communities", href: "/dashboard/communities", icon: Users },
+      { label: "Entertainment", href: "/dashboard/entertainment", icon: Star },
+    ],
+  },
   { label: "Collaborations", href: "/dashboard/collaborations", icon: UserPlus },
   { label: "Chumme AI Chat", href: "/dashboard/ai-chat", icon: MessageSquare },
   { label: "Profile", href: "/dashboard/profile", icon: User },

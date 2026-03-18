@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import type { ModalData } from "@/modules/entertainment/types";
@@ -35,10 +35,22 @@ export const EntertainmentModal = ({
   categories,
   subcategories,
 }: EntertainmentModalProps) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState("");
+  const [name, setName] = useState(() =>
+    typeof modalData.item?.name === "string" ? modalData.item.name : ""
+  );
+  const [description, setDescription] = useState(() =>
+    typeof modalData.item?.description === "string" ? modalData.item.description : ""
+  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState(() =>
+    typeof modalData.item?.chummeCategoryId === "string"
+      ? modalData.item.chummeCategoryId
+      : ""
+  );
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(() =>
+    typeof modalData.item?.chummeSubCategoryId === "string"
+      ? modalData.item.chummeSubCategoryId
+      : ""
+  );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState("Active");
 
@@ -62,24 +74,6 @@ export const EntertainmentModal = ({
     createTopicCategory.isPending ||
     updateTopicCategory.isPending ||
     deleteTopicCategory.isPending;
-
-  // Pre-fill form when editing
-  useEffect(() => {
-    if (modalData.item) {
-      setName((modalData.item.name as string) || "");
-      setDescription((modalData.item.description as string) || "");
-      setSelectedCategoryId((modalData.item.chummeCategoryId as string) || "");
-      setSelectedSubcategoryId(
-        (modalData.item.chummeSubCategoryId as string) || "",
-      );
-    } else {
-      setName("");
-      setDescription("");
-      setSelectedCategoryId(categories[0]?.id || "");
-      setSelectedSubcategoryId(subcategories[0]?.id || "");
-      setStatus("Active");
-    }
-  }, [modalData, categories, subcategories]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,14 +101,17 @@ export const EntertainmentModal = ({
           break;
 
         case "create-subcategory":
-          if (!selectedCategoryId) return;
+          {
+            const categoryId = selectedCategoryId || categories[0]?.id || "";
+            if (!categoryId) return;
           await createSubCategory.mutateAsync({
             name: name.trim(),
-            chummeCategoryId: selectedCategoryId,
+            chummeCategoryId: categoryId,
             note: description.trim() || undefined,
             isAd: false,
 
           });
+          }
           break;
 
         case "edit-subcategory":
@@ -128,14 +125,17 @@ export const EntertainmentModal = ({
           break;
 
         case "add-topic":
-          if (!selectedSubcategoryId) return;
+          {
+            const subcategoryId = selectedSubcategoryId || subcategories[0]?.id || "";
+            if (!subcategoryId) return;
           await createTopicCategory.mutateAsync({
             name: name.trim(),
-            chummeSubCategoryId: selectedSubcategoryId,
+            chummeSubCategoryId: subcategoryId,
             note: description.trim() || undefined,
             isAd: false,
 
           });
+          }
           break;
 
         case "edit-topic":
@@ -186,6 +186,9 @@ export const EntertainmentModal = ({
     ? "bg-gray-800 border-gray-700 text-white focus:border-[#A53860]"
     : "bg-gray-50 border-gray-200 text-gray-900 focus:border-[#A53860]"
     } focus:ring-2 focus:ring-[#A53860]/10`;
+
+  const effectiveSelectedCategoryId = selectedCategoryId || categories[0]?.id || "";
+  const effectiveSelectedSubcategoryId = selectedSubcategoryId || subcategories[0]?.id || "";
 
   const getTitle = () => {
     switch (modalData.type) {
@@ -306,7 +309,7 @@ export const EntertainmentModal = ({
                 <div>
                   <label className={labelClass}>Parent Category</label>
                   <select
-                    value={selectedCategoryId}
+                    value={effectiveSelectedCategoryId}
                     onChange={(e) => setSelectedCategoryId(e.target.value)}
                     className={selectClass}
                     required
@@ -326,7 +329,7 @@ export const EntertainmentModal = ({
                 <div>
                   <label className={labelClass}>Parent Subcategory</label>
                   <select
-                    value={selectedSubcategoryId}
+                    value={effectiveSelectedSubcategoryId}
                     onChange={(e) => setSelectedSubcategoryId(e.target.value)}
                     className={selectClass}
                     required
