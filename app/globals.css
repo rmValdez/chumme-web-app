@@ -23,7 +23,7 @@
   --color-border-light: var(--border-light);
   --color-border-strong: var(--border-strong);
 
-  --font-sans: "Poppins", var(--font-geist-sans), sans-serif;
+  --font-sans: "Poppins", sans-serif;
   --font-mono: var(--font-geist-mono);
 
   /* Custom Utilities */
