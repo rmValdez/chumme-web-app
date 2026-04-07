@@ -27,7 +27,6 @@ export const VerifyEmailForm = () => {
       const timeout = window.setTimeout(() => setTimer((t) => t - 1), 1000);
       return () => window.clearTimeout(timeout);
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCanResend(true);
   }, [timer]);
 

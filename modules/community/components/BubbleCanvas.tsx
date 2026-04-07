@@ -49,7 +49,7 @@ export const BubbleCanvas = ({
     width: propWidth || 800,
     height: propHeight || 500,
   });
-  const animationRef = useRef<number>(null);
+  const animationRef = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

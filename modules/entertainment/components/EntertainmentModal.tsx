@@ -103,7 +103,6 @@ export const EntertainmentModal = ({
     modalData.type === "edit-subcategory";
 
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
     if (modalData.item) {
       setName((modalData.item.name as string) || "");
       setDescription((modalData.item.description as string) || "");
@@ -120,7 +119,6 @@ export const EntertainmentModal = ({
       setKeywords([]);
     }
     setKeywordInput("");
-    /* eslint-enable react-hooks/set-state-in-effect */
   }, [modalData, categories, subcategories]);
 
   const addKeyword = () => {
