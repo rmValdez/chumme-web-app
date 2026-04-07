@@ -15,14 +15,16 @@ export const LinksTab = ({ isDarkMode }: LinksTabProps) => {
         >
           Discover Links
         </h2>
-        <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
+        <button className="px-4 py-2 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
           Add Link
         </button>
       </div>
 
       <div
         className={`rounded-lg border overflow-hidden ${
-          isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+          isDarkMode
+            ? "bg-gray-800 border-gray-700"
+            : "bg-white border-gray-200"
         }`}
       >
         <div className="overflow-x-auto">
@@ -86,9 +88,13 @@ export const LinksTab = ({ isDarkMode }: LinksTabProps) => {
               {discoverLinks.map((link) => (
                 <tr
                   key={link.id}
-                  className={isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}
+                  className={
+                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"
+                  }
                 >
-                  <td className={`px-6 py-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                  <td
+                    className={`px-6 py-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                  >
                     {link.preview}
                   </td>
                   <td

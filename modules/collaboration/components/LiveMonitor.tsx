@@ -52,18 +52,22 @@ export const LiveMonitor = ({ isDarkMode, rooms }: LiveMonitorProps) => {
               >
                 <div className="flex justify-between">
                   <span>Participants</span>
-                  <span className={isDarkMode ? "text-gray-300" : "text-gray-700"}>
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
                     {room.participants}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Song</span>
-                  <span className={isDarkMode ? "text-gray-300" : "text-gray-700"}>
+                  <span
+                    className={isDarkMode ? "text-gray-300" : "text-gray-700"}
+                  >
                     {room.song}
                   </span>
                 </div>
               </div>
-              <button className="w-full mt-4 h-10 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+              <button className="w-full mt-4 h-10 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
                 Enter Room
               </button>
             </div>

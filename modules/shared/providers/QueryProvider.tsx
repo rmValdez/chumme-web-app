@@ -27,8 +27,6 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* Devtools only render in development mode */}
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

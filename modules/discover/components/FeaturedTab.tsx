@@ -17,7 +17,7 @@ export const FeaturedTab = ({ isDarkMode }: FeaturedTabProps) => {
         >
           Featured Discover Posts
         </h2>
-        <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
+        <button className="px-4 py-2 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
           Feature Post
         </button>
       </div>
@@ -30,13 +30,15 @@ export const FeaturedTab = ({ isDarkMode }: FeaturedTabProps) => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.1 * index }}
             className={`p-6 rounded-lg border ${
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-bold text-sm">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-bold text-sm">
                     #{post.rank}
                   </span>
                   <h3
@@ -47,34 +49,50 @@ export const FeaturedTab = ({ isDarkMode }: FeaturedTabProps) => {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                   <div>
-                    <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+                    >
                       Fandom
                     </p>
-                    <p className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                    <p
+                      className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                    >
                       {post.fandom}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+                    >
                       Duration
                     </p>
-                    <p className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                    <p
+                      className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                    >
                       {post.duration}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+                    >
                       Start Date
                     </p>
-                    <p className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                    <p
+                      className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                    >
                       {post.startDate}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+                    <p
+                      className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+                    >
                       End Date
                     </p>
-                    <p className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                    <p
+                      className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
+                    >
                       {post.endDate}
                     </p>
                   </div>

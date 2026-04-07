@@ -14,7 +14,9 @@ export const VerifyEmailForm = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "your email";
 
-  const [otp, setOtp] = useState<string[]>(Array.from({ length: OTP_LENGTH }, () => ""));
+  const [otp, setOtp] = useState<string[]>(
+    Array.from({ length: OTP_LENGTH }, () => ""),
+  );
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [timer, setTimer] = useState<number>(147);
   const [canResend, setCanResend] = useState<boolean>(false);
@@ -85,7 +87,10 @@ export const VerifyEmailForm = () => {
   const seconds = timer % 60;
 
   return (
-    <AuthLayout headline={["Check your", "inbox"]} tagline="Enter the 6-digit code we sent to verify your email address.">
+    <AuthLayout
+      headline={["Check your", "inbox"]}
+      tagline="Enter the 6-digit code we sent to verify your email address."
+    >
       <motion.div
         key="verify"
         initial={{ opacity: 0, y: 20 }}
@@ -96,7 +101,9 @@ export const VerifyEmailForm = () => {
         <AuthCard>
           <button
             type="button"
-            onClick={() => router.push(`/register?email=${encodeURIComponent(email)}`)}
+            onClick={() =>
+              router.push(`/register?email=${encodeURIComponent(email)}`)
+            }
             className="flex items-center gap-2 text-gray-600 hover:text-[#A53860] transition-colors mb-6 font-['Poppins',sans-serif]"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -104,7 +111,7 @@ export const VerifyEmailForm = () => {
           </button>
 
           <div className="mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#EF88AD] to-[#A53860] rounded-2xl flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-linear-to-br from-[#EF88AD] to-[#A53860] rounded-2xl flex items-center justify-center mb-6">
               <Mail className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold mb-2 text-gray-900">
@@ -125,8 +132,12 @@ export const VerifyEmailForm = () => {
                   type="text"
                   inputMode="numeric"
                   value={digit}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleOtpChange(index, e.target.value)}
-                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleOtpKeyDown(index, e)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleOtpChange(index, e.target.value)
+                  }
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                    handleOtpKeyDown(index, e)
+                  }
                   ref={(el) => {
                     inputRefs.current[index] = el;
                   }}
@@ -139,7 +150,7 @@ export const VerifyEmailForm = () => {
             <button
               type="submit"
               disabled={otp.join("").length !== 6}
-              className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all disabled:opacity-50 disabled:pointer-events-none"
             >
               Verify Email
             </button>

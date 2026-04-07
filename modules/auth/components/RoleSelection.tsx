@@ -10,7 +10,10 @@ interface RoleSelectionProps {
   onSignIn: () => void;
 }
 
-export const RoleSelection = ({ onSelectRole, onSignIn }: RoleSelectionProps) => {
+export const RoleSelection = ({
+  onSelectRole,
+  onSignIn,
+}: RoleSelectionProps) => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -29,14 +32,14 @@ export const RoleSelection = ({ onSelectRole, onSignIn }: RoleSelectionProps) =>
     >
       {/* Header */}
       <div className="mb-10 text-center">
-        <h2 className={`text-3xl font-bold mb-3 ${
-          isDark ? "text-white" : "text-gray-900"
-        }`}>
+        <h2
+          className={`text-3xl font-bold mb-3 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}
+        >
           Which one are you?
         </h2>
-        <p className={`text-sm ${
-          isDark ? "text-gray-400" : "text-gray-600"
-        }`}>
+        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
           Select your role to continue
         </p>
       </div>
@@ -54,27 +57,31 @@ export const RoleSelection = ({ onSelectRole, onSignIn }: RoleSelectionProps) =>
           }`}
         >
           <div className="mb-6 flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center">
               <Shield className="w-8 h-8 text-white" />
             </div>
           </div>
 
-          <h3 className={`text-xl font-bold text-center mb-3 ${
-            isDark ? "text-white" : "text-gray-900"
-          }`}>
+          <h3
+            className={`text-xl font-bold text-center mb-3 ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}
+          >
             Admin
           </h3>
 
-          <p className={`text-sm text-center mb-6 leading-relaxed ${
-            isDark ? "text-gray-400" : "text-gray-600"
-          }`}>
+          <p
+            className={`text-sm text-center mb-6 leading-relaxed ${
+              isDark ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
             Manage platform, users, communities, and analytics
           </p>
 
           <button
             type="button"
             onClick={() => onSelectRole("admin")}
-            className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
+            className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
           >
             Continue as Admin
           </button>
@@ -91,27 +98,31 @@ export const RoleSelection = ({ onSelectRole, onSignIn }: RoleSelectionProps) =>
           }`}
         >
           <div className="mb-6 flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#EF88AD] to-[#A53860] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#EF88AD] to-[#A53860] flex items-center justify-center">
               <Users className="w-8 h-8 text-white" />
             </div>
           </div>
 
-          <h3 className={`text-xl font-bold text-center mb-3 ${
-            isDark ? "text-white" : "text-gray-900"
-          }`}>
+          <h3
+            className={`text-xl font-bold text-center mb-3 ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}
+          >
             User
           </h3>
 
-          <p className={`text-sm text-center mb-6 leading-relaxed ${
-            isDark ? "text-gray-400" : "text-gray-600"
-          }`}>
+          <p
+            className={`text-sm text-center mb-6 leading-relaxed ${
+              isDark ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
             Discover communities, chat, and explore content
           </p>
 
           <button
             type="button"
             onClick={() => onSelectRole("user")}
-            className="w-full h-12 bg-gradient-to-r from-[#EF88AD] to-[#A53860] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
+            className="w-full h-12 bg-linear-to-r from-[#EF88AD] to-[#A53860] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
           >
             Continue as User
           </button>
@@ -119,12 +130,12 @@ export const RoleSelection = ({ onSelectRole, onSignIn }: RoleSelectionProps) =>
       </div>
 
       {/* Sign In Link */}
-      <div className={`text-center pt-8 mt-6 border-t ${
-        isDark ? "border-gray-700" : "border-gray-200"
-      }`}>
-        <p className={`text-sm ${
-          isDark ? "text-gray-400" : "text-gray-600"
-        }`}>
+      <div
+        className={`text-center pt-8 mt-6 border-t ${
+          isDark ? "border-gray-700" : "border-gray-200"
+        }`}
+      >
+        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
           Already have an account?{" "}
           <button
             type="button"

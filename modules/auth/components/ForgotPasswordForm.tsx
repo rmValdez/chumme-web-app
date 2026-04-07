@@ -18,7 +18,10 @@ export const ForgotPasswordForm = () => {
   };
 
   return (
-    <AuthLayout headline={["Forgot your", "password?"]} tagline="No worries — we'll send a reset link to your inbox.">
+    <AuthLayout
+      headline={["Forgot your", "password?"]}
+      tagline="No worries — we'll send a reset link to your inbox."
+    >
       <motion.div
         key="forgot"
         initial={{ opacity: 0, y: 20 }}
@@ -37,7 +40,7 @@ export const ForgotPasswordForm = () => {
           </button>
 
           <div className="mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#EF88AD] to-[#A53860] rounded-2xl flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-linear-to-br from-[#EF88AD] to-[#A53860] rounded-2xl flex items-center justify-center mb-6">
               <Mail className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold mb-2 text-gray-900">
@@ -58,7 +61,7 @@ export const ForgotPasswordForm = () => {
               <button
                 type="button"
                 onClick={() => router.push("/auth")}
-                className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
+                className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
               >
                 Back to Sign In
               </button>
@@ -75,7 +78,9 @@ export const ForgotPasswordForm = () => {
                     type="email"
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setEmail(e.target.value)
+                    }
                     className="w-full h-12 pl-12 pr-4 rounded-xl font-['Poppins',sans-serif] text-sm placeholder:text-gray-400 focus:border-[#A53860] focus:ring-2 focus:ring-[#A53860]/10 transition-all outline-none border border-gray-200 bg-white text-gray-900"
                     required
                   />
@@ -84,7 +89,7 @@ export const ForgotPasswordForm = () => {
 
               <button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
+                className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
               >
                 Send Reset Link
               </button>

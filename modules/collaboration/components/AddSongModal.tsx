@@ -58,7 +58,9 @@ export const AddSongModal = ({
                   isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"
                 }`}
               >
-                <X className={`w-5 h-5 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`} />
+                <X
+                  className={`w-5 h-5 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+                />
               </button>
             </div>
 
@@ -114,7 +116,7 @@ export const AddSongModal = ({
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold hover:shadow-lg transition-shadow"
+                className="flex-1 h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold hover:shadow-lg transition-shadow"
               >
                 Add Song
               </button>
