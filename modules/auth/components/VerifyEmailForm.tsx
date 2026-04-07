@@ -111,7 +111,7 @@ export const VerifyEmailForm = () => {
           </button>
 
           <div className="mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#EF88AD] to-[#A53860] rounded-2xl flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-linear-to-br from-[#EF88AD] to-[#A53860] rounded-2xl flex items-center justify-center mb-6">
               <Mail className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold mb-2 text-gray-900">
@@ -150,7 +150,7 @@ export const VerifyEmailForm = () => {
             <button
               type="submit"
               disabled={otp.join("").length !== 6}
-              className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all disabled:opacity-50 disabled:pointer-events-none"
             >
               Verify Email
             </button>

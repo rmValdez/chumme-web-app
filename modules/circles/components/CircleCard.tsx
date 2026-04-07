@@ -43,7 +43,7 @@ export const CircleCard = ({ circle, className }: CircleCardProps) => {
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-brand-core/20 to-brand-vibrant/20" />
+          <div className="h-full w-full bg-linear-to-br from-brand-core/20 to-brand-vibrant/20" />
         )}
 
         {/* Category Badge */}

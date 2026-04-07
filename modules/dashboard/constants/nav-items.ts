@@ -7,7 +7,6 @@ import {
   UserPlus,
   MessageSquare,
   User,
-  Settings,
   Activity,
   LayoutGrid,
 } from "lucide-react";

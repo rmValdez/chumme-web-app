@@ -19,7 +19,6 @@ import {
   useAPKSetLatest,
   useAPKSetStable,
 } from "@/modules/dashboard/hooks/useAPK";
-import type { APKRelease } from "@/modules/dashboard/api/apk.service";
 import { Snackbar } from "@/modules/shared/components/Snackbar";
 import { useSnackbar } from "@/modules/shared/hooks/useSnackbar";
 import APKUploadModal from "@/modules/dashboard/components/APKUploadModal";
@@ -306,8 +305,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
           const isActioning = !!loadingAction[release.id];
           const changesList: string[] = Array.isArray(release.whatIsNew)
             ? release.whatIsNew.filter((c: string) => c.trim())
-            : typeof (release as unknown as { releaseNotes?: string }).releaseNotes === "string"
-              ? ((release as unknown as { releaseNotes: string }).releaseNotes)
+            : typeof (release as unknown as { releaseNotes?: string })
+                  .releaseNotes === "string"
+              ? (release as unknown as { releaseNotes: string }).releaseNotes
                   .split("\n")
                   .filter((c: string) => c.trim())
               : [];

@@ -2,12 +2,14 @@
 
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  updatePhysics, 
-  drawConnection, 
+import {
+  updatePhysics,
+  drawConnection,
   distributeBubbles,
-  type BubbleInstance 
+  type BubbleInstance,
 } from "../utils/bubble-physics";
+
+import { ChummeVisualDesign } from "@/modules/community/api/communities-api";
 
 interface BubbleData {
   id: string;
@@ -16,7 +18,7 @@ interface BubbleData {
   color?: string;
   size: number;
   label?: string;
-  chummeVisualDesign?: any | null;
+  chummeVisualDesign?: ChummeVisualDesign | null;
   onClick: () => void;
 }
 
@@ -29,17 +31,18 @@ interface InteractiveBubbleCanvasProps {
 const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
   bubbles,
   isDark,
-  className = ""
+  className = "",
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  
+
   // Transform data into physics instances
   const bubbleInstances = useMemo(() => {
-    return bubbles.map(b => {
-      const primaryColor = b.color || (b.chummeVisualDesign?.colorSet?.primary) || "#A53860";
+    return bubbles.map((b) => {
+      const primaryColor =
+        b.color || b.chummeVisualDesign?.colorSet?.primary || "#A53860";
       return {
         ...b,
         x: 0,
@@ -48,7 +51,7 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
         vy: 0,
         radius: b.size / 2,
         primaryColor,
-        isHovered: false
+        isHovered: false,
       } as BubbleInstance;
     });
   }, [bubbles]);
@@ -80,7 +83,7 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
 
     const render = () => {
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-      
+
       // Update physics
       updatePhysics(bubbleInstances, dimensions.width, dimensions.height);
 
@@ -90,44 +93,55 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
           const dx = bubbleInstances[i].x - bubbleInstances[j].x;
           const dy = bubbleInstances[i].y - bubbleInstances[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < 250) {
-            drawConnection(ctx, bubbleInstances[i], bubbleInstances[j], distance, isDark);
+            drawConnection(
+              ctx,
+              bubbleInstances[i],
+              bubbleInstances[j],
+              distance,
+              isDark,
+            );
           }
         }
       }
 
       // Draw bubbles (shadows/glows)
-      bubbleInstances.forEach(bubble => {
+      bubbleInstances.forEach((bubble) => {
         ctx.save();
         ctx.beginPath();
         ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-        
+
         // Glow effect
         ctx.shadowBlur = bubble.isHovered ? 40 : 20;
         ctx.shadowColor = bubble.primaryColor;
         ctx.fillStyle = bubble.primaryColor;
         ctx.globalAlpha = 0.8;
         ctx.fill();
-        
+
         // Text
         ctx.fillStyle = "white";
         ctx.font = `bold ${Math.max(10, bubble.radius / 3)}px Inter, system-ui, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.globalAlpha = 1;
-        
+
         // Truncate name if too long
         let displayName = bubble.name;
-        if (displayName.length > 12) displayName = displayName.substring(0, 10) + "..";
-        
+        if (displayName.length > 12)
+          displayName = displayName.substring(0, 10) + "..";
+
         ctx.fillText(displayName, bubble.x, bubble.y);
-        
+
         if (bubble.count !== undefined) {
           ctx.font = `${Math.max(8, bubble.radius / 5)}px Inter, system-ui, sans-serif`;
-          ctx.fillText(`${bubble.count} users`, bubble.x, bubble.y + (bubble.radius / 2.5));
+          ctx.fillText(
+            `${bubble.count} users`,
+            bubble.x,
+            bubble.y + bubble.radius / 2.5,
+          );
         }
-        
+
         ctx.restore();
       });
 
@@ -147,11 +161,11 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
     const mouseY = e.clientY - rect.top;
 
     let foundId: string | null = null;
-    bubbleInstances.forEach(bubble => {
+    bubbleInstances.forEach((bubble) => {
       const dx = mouseX - bubble.x;
       const dy = mouseY - bubble.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      
+
       if (distance < bubble.radius) {
         bubble.isHovered = true;
         foundId = bubble.id;
@@ -167,7 +181,7 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
 
   const handleClick = () => {
     if (hoveredId) {
-      const bubble = bubbles.find(b => b.id === hoveredId);
+      const bubble = bubbles.find((b) => b.id === hoveredId);
       bubble?.onClick();
     }
   };
@@ -182,7 +196,7 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
         onClick={handleClick}
         className="block"
       />
-      
+
       {/* Overlay UI hints */}
       <AnimatePresence>
         {hoveredId && (
@@ -191,10 +205,12 @@ const InteractiveBubbleCanvas: React.FC<InteractiveBubbleCanvasProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             className={`absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full border text-xs font-semibold backdrop-blur-md z-10 pointer-events-none ${
-              isDark ? "bg-gray-900/80 border-gray-700 text-white" : "bg-white/80 border-gray-200 text-gray-900"
+              isDark
+                ? "bg-gray-900/80 border-gray-700 text-white"
+                : "bg-white/80 border-gray-200 text-gray-900"
             }`}
           >
-            Click to manage {bubbles.find(b => b.id === hoveredId)?.name}
+            Click to manage {bubbles.find((b) => b.id === hoveredId)?.name}
           </motion.div>
         )}
       </AnimatePresence>

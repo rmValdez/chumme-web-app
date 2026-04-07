@@ -51,7 +51,7 @@ export default function LandingPage() {
       a.click();
       document.body.removeChild(a);
       showDownload(`chumme-v${latestAPK.versionName}.apk`);
-    } catch (err) {
+    } catch (_err) {
       // fallback to direct fileUrl if presigned URL fails
       if (latestAPK?.fileUrl) {
         window.open(latestAPK.fileUrl, "_blank", "noopener,noreferrer");
@@ -75,7 +75,7 @@ export default function LandingPage() {
     >
       {/* Background gradient — a subtle colored overlay on the whole page */}
       <div
-        className={`absolute inset-0 ${isDark ? "bg-gradient-to-b from-[#0a0a0a] via-[#1a0510]/30 to-[#0a0a0a]" : "bg-gradient-to-b from-white via-[#fce7f3]/20 to-white"}`}
+        className={`absolute inset-0 ${isDark ? "bg-linear-to-b from-[#0a0a0a] via-[#1a0510]/30 to-[#0a0a0a]" : "bg-linear-to-b from-white via-[#fce7f3]/20 to-white"}`}
       />
 
       {/* All content sits above the background via relative z-10 */}
@@ -90,7 +90,7 @@ export default function LandingPage() {
         >
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             {/* Logo */}
-            <span className="text-lg sm:text-xl font-semibold tracking-tight bg-gradient-to-r from-[#EF88AD] via-[#A53860] to-[#670D2F] bg-clip-text text-transparent">
+            <span className="text-lg sm:text-xl font-semibold tracking-tight bg-linear-to-r from-[#EF88AD] via-[#A53860] to-[#670D2F] bg-clip-text text-transparent">
               CHUMME
             </span>
 
@@ -136,7 +136,7 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => router.push("/auth")}
-                className="bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-medium px-5 py-2 rounded-lg text-sm transition-all"
+                className="bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-medium px-5 py-2 rounded-lg text-sm transition-all"
               >
                 Get Started
               </button>
@@ -228,7 +228,7 @@ export default function LandingPage() {
                   router.push("/auth");
                   setMobileMenuOpen(false);
                 }}
-                className="w-full bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium px-4 py-2.5 rounded-lg text-sm transition-all"
+                className="w-full bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium px-4 py-2.5 rounded-lg text-sm transition-all"
               >
                 Get Started
               </button>
@@ -265,7 +265,7 @@ export default function LandingPage() {
                 className="mb-8 sm:mb-12"
               >
                 <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight tracking-tight">
-                  <span className="bg-gradient-to-r from-[#EF88AD] via-[#A53860] to-[#670D2F] bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-[#EF88AD] via-[#A53860] to-[#670D2F] bg-clip-text text-transparent">
                     Emotions
                   </span>
                   <br />
@@ -295,7 +295,7 @@ export default function LandingPage() {
               >
                 <button
                   onClick={() => router.push("/auth")}
-                  className="w-full sm:w-auto bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-medium text-sm sm:text-base px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl transition-all"
+                  className="w-full sm:w-auto bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-medium text-sm sm:text-base px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl transition-all"
                 >
                   Start Journey
                 </button>
@@ -332,7 +332,7 @@ export default function LandingPage() {
                   { icon: Sparkles, text: "Turn emotions into value" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#A53860]/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#A53860]/10 flex items-center justify-center shrink-0">
                       <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#A53860]" />
                     </div>
                     <span
@@ -416,7 +416,7 @@ export default function LandingPage() {
                   className={`rounded-xl p-6 sm:p-8 border transition-all ${isDark ? "bg-gray-900/50 border-gray-800 hover:border-[#A53860]/50" : "bg-white border-gray-200 hover:border-[#A53860]/50"}`}
                 >
                   <div className="flex items-start gap-4 sm:gap-5 mb-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#A53860]/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#A53860]/10 flex items-center justify-center shrink-0">
                       <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#A53860]" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -491,7 +491,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.6, delay: index * 0.2 }}
                   className="flex gap-4 sm:gap-6 items-start"
                 >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-linear-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center shrink-0">
                     <span className="text-base sm:text-lg font-bold text-white">
                       {step.number}
                     </span>
@@ -529,9 +529,9 @@ export default function LandingPage() {
                   whileInView={{ y: 0, opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`text-center p-6 sm:p-8 rounded-2xl border transition-all ${isDark ? "bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-[#A53860]/10" : "bg-white border-gray-200 shadow-lg"}`}
+                  className={`text-center p-6 sm:p-8 rounded-2xl border transition-all ${isDark ? "bg-linear-to-br from-[#1a1a1a] to-[#0f0f0f] border-[#A53860]/10" : "bg-white border-gray-200 shadow-lg"}`}
                 >
-                  <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#EF88AD] to-[#A53860] bg-clip-text text-transparent mb-2">
+                  <div className="text-4xl sm:text-5xl font-bold bg-linear-to-r from-[#EF88AD] to-[#A53860] bg-clip-text text-transparent mb-2">
                     {stat.value}
                   </div>
                   <div
@@ -555,14 +555,14 @@ export default function LandingPage() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-[#A53860]/20 to-[#670D2F]/20 rounded-3xl blur-3xl" />
+              <div className="absolute inset-0 bg-linear-to-r from-[#A53860]/20 to-[#670D2F]/20 rounded-3xl blur-3xl" />
               <div className="relative">
                 <h2
                   className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight ${isDark ? "text-white" : "text-gray-900"}`}
                 >
                   Make your emotions
                   <br />
-                  <span className="bg-gradient-to-r from-[#EF88AD] to-[#A53860] bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-[#EF88AD] to-[#A53860] bg-clip-text text-transparent">
                     unforgettable
                   </span>
                 </h2>
@@ -577,7 +577,7 @@ export default function LandingPage() {
                 >
                   <button
                     onClick={() => router.push("/auth")}
-                    className="w-full sm:w-auto bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:from-[#EF88AD] hover:to-[#A53860] text-white font-medium text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-5 rounded-xl transition-all shadow-2xl shadow-[#A53860]/40"
+                    className="w-full sm:w-auto bg-linear-to-r from-[#A53860] to-[#670D2F] hover:from-[#EF88AD] hover:to-[#A53860] text-white font-medium text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-5 rounded-xl transition-all shadow-2xl shadow-[#A53860]/40"
                   >
                     Start Your Journey
                   </button>
@@ -592,7 +592,7 @@ export default function LandingPage() {
           className={`px-4 sm:px-8 lg:px-16 py-8 sm:py-12 border-t ${isDark ? "border-[#A53860]/10" : "border-gray-200"}`}
         >
           <div className="max-w-7xl mx-auto flex flex-col items-center gap-6 sm:gap-0 sm:flex-row sm:justify-between">
-            <span className="text-xl font-semibold bg-gradient-to-r from-[#EF88AD] to-[#A53860] bg-clip-text text-transparent">
+            <span className="text-xl font-semibold bg-linear-to-r from-[#EF88AD] to-[#A53860] bg-clip-text text-transparent">
               CHUMME
             </span>
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">

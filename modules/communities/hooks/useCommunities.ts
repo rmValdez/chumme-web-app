@@ -34,7 +34,9 @@ export const useDeleteCommunitiesCategory = (options?: {
     mutationFn: async ({ id }: { id: string }) => {
       const res = await api.delete(`/api/v1/chumme-categories/${id}`);
       if (!res.ok)
-        throw new Error((res.data as { message?: string })?.message || "Delete failed");
+        throw new Error(
+          (res.data as { message?: string })?.message || "Delete failed",
+        );
       return res.data;
     },
     onSuccess: () => {
@@ -60,7 +62,9 @@ export const useUpdateCommunitiesCategory = (options?: {
         name: params.name,
       });
       if (!res.ok)
-        throw new Error((res.data as { message?: string })?.message || "Update failed");
+        throw new Error(
+          (res.data as { message?: string })?.message || "Update failed",
+        );
       return res.data as ChummeCategory;
     },
     onSuccess: () => {
@@ -76,7 +80,9 @@ export const useDeleteSubCategory = (options?: { onSuccess?: () => void }) => {
     mutationFn: async ({ id }: { id: string }) => {
       const res = await api.delete(`/api/v1/chumme-subcategories/${id}`);
       if (!res.ok)
-        throw new Error((res.data as { message?: string })?.message || "Delete failed");
+        throw new Error(
+          (res.data as { message?: string })?.message || "Delete failed",
+        );
       return res.data;
     },
     onSuccess: () => {
@@ -100,7 +106,9 @@ export const useUpdateSubCategory = (options?: { onSuccess?: () => void }) => {
         name: params.name,
       });
       if (!res.ok)
-        throw new Error((res.data as { message?: string })?.message || "Update failed");
+        throw new Error(
+          (res.data as { message?: string })?.message || "Update failed",
+        );
       return res.data as ChummeSubCategory;
     },
     onSuccess: () => {

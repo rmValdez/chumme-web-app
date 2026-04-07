@@ -160,7 +160,9 @@ export const OverviewTab = ({
             <p
               className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-600"}`}
             >
-              No results for {"\""}{searchTerm}{"\""}
+              No results for {'"'}
+              {searchTerm}
+              {'"'}
             </p>
             <p
               className={`text-xs mt-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}

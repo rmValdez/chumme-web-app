@@ -116,7 +116,7 @@ export const AddSongModal = ({
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold hover:shadow-lg transition-shadow"
+                className="flex-1 h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold hover:shadow-lg transition-shadow"
               >
                 Add Song
               </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -80,15 +80,11 @@ export const CommunityControlCenter = ({
   isDark: propDark,
 }: CommunityControlCenterProps) => {
   const { resolvedTheme } = useTheme();
-  const [isDark, setIsDark] = useState(propDark ?? resolvedTheme === "dark");
+  // Derived state for isDark to avoid set-state-in-effect warning
+  const isDark = propDark ?? resolvedTheme === "dark";
+
   const queryClient = useQueryClient();
   const { messages, dismiss, showSuccess, showError } = useSnackbar();
-
-  useEffect(() => {
-    if (propDark === undefined) {
-      setIsDark(resolvedTheme === "dark");
-    }
-  }, [resolvedTheme, propDark]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -96,17 +92,6 @@ export const CommunityControlCenter = ({
     description: "",
     targetParentName: "",
   });
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      color: "#A53860",
-      description: "",
-      targetParentName: "",
-    });
-    setIsEdit(false);
-    setEditingId(null);
-  };
 
   const [activeTab, setActiveTab] = useState<TabId>("countries");
   const [showModal, setShowModal] = useState(false);
@@ -116,32 +101,44 @@ export const CommunityControlCenter = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountryId, setSelectedCountryId] = useState<string>("");
 
+  const resetForm = useCallback(() => {
+    setFormData({
+      name: "",
+      color: "#A53860",
+      description: "",
+      targetParentName: "",
+    });
+    setIsEdit(false);
+    setEditingId(null);
+  }, []);
+
   // ─── Data Fetching ──────────────────────────────────────────────────────────
 
-  const { data: categoriesData, isLoading: loadingCountries } =
-    useGetCommunitiesCategories();
-  const countries = categoriesData?.categories ?? [];
+  const { data: categoriesData, isLoading: loadingCountries } = useGetCommunitiesCategories();
+  const countries = useMemo(() => categoriesData?.categories ?? [], [categoriesData]);
 
-  const { data: subData, isLoading: loadingSub } =
-    useGetSubcategoriesByCategoryId(selectedCountryId, {
-      enabled: !!selectedCountryId,
-    });
-  const subcategories = subData?.subCategories ?? [];
+  const { data: subData, isLoading: loadingSub } = useGetSubcategoriesByCategoryId(selectedCountryId, {
+    enabled: !!selectedCountryId,
+  });
+  const subcategories = useMemo(() => subData?.subCategories ?? [], [subData]);
 
-  // Set default selected country
-  useEffect(() => {
+
+  // Adjust state when countries load to select the first one automatically
+  const [prevCountries, setPrevCountries] = useState(countries);
+  if (countries !== prevCountries) {
+    setPrevCountries(countries);
     if (countries.length > 0 && !selectedCountryId) {
       setSelectedCountryId(countries[0].id);
     }
-  }, [countries, selectedCountryId]);
+  }
 
   // ─── Mutation Hooks ─────────────────────────────────────────────────────────
 
-  const onMutationSuccess = () => {
+  const onMutationSuccess = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: communitiesKeys.all });
     setShowModal(false);
     resetForm();
-  };
+  }, [queryClient, resetForm]);
 
   const { mutate: createCountry, isPending: creatingCountry } =
     useCreateCommunitiesCategory({ onSuccess: onMutationSuccess });
@@ -168,41 +165,42 @@ export const CommunityControlCenter = ({
     updatingSub ||
     deletingSub;
 
+
   // ─── Form State ─────────────────────────────────────────────────────────────
 
-  const openCreate = (type: ModalType) => {
-    resetForm();
-    setModalType(type);
-    setIsEdit(false);
-    setShowModal(true);
-  };
+  const openCreate = useCallback(
+    (type: ModalType) => {
+      resetForm();
+      setModalType(type);
+      setIsEdit(false);
+      setShowModal(true);
+    },
+    [resetForm],
+  );
 
-  const openEdit = (type: ModalType, item: any) => {
-    setModalType(type);
-    setIsEdit(true);
-    setEditingId(item.id);
-    const color =
-      item.color ?? item.chummeVisualDesign?.colorSet?.primary ?? "#D3427B";
-    setFormData({
-      name: item.name,
-      color: color,
-      description: item.description || item.note || "",
-      targetParentName:
-        countries.find((c) => c.id === item.chummeCategoryId)?.name || "",
-    });
-    setShowModal(true);
-  };
+  const openEdit = useCallback(
+    (type: ModalType, item: any) => {
+      setModalType(type);
+      setIsEdit(true);
+      setEditingId(item.id);
+      const color =
+        item.color ?? item.chummeVisualDesign?.colorSet?.primary ?? "#D3427B";
+      setFormData({
+        name: item.name,
+        color: color,
+        description: item.description || item.note || "",
+        targetParentName:
+          countries.find((c) => c.id === item.chummeCategoryId)?.name || "",
+      });
+      setShowModal(true);
+    },
+    [countries],
+  );
 
-  const handleColorChange = (newColor: string) => {
-    setFormData((prev) => ({ ...prev, color: newColor }));
-  };
-
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     if (!formData.name.trim()) return;
 
     if (modalType === "country") {
-      // TODO: re-add color to payload once backend Joi schema is updated
-      // Backend fix needed in: chumme-api/src/controllers/chumme-category.controller.ts
       createCountry(
         {
           name: formData.name,
@@ -220,8 +218,6 @@ export const CommunityControlCenter = ({
         (c) => c.name === formData.targetParentName,
       );
       if (!parent) return;
-      // TODO: re-add color to payload once backend Joi schema is updated
-      // Backend fix needed in: chumme-api/src/controllers/chumme-category.controller.ts
       createSub(
         {
           name: formData.name,
@@ -236,52 +232,56 @@ export const CommunityControlCenter = ({
         },
       );
     }
-  };
+  }, [
+    countries,
+    createCountry,
+    createSub,
+    formData,
+    modalType,
+    showError,
+    showSuccess,
+  ]);
 
-  const handleUpdate = () => {
+  const handleUpdate = useCallback(() => {
     if (!formData.name.trim() || !editingId) return;
 
-    // TODO: re-add color to payload once backend Joi schema is updated
-    // Backend fix needed in: chumme-api/src/controllers/chumme-category.controller.ts
     const payload = { id: editingId, name: formData.name };
 
     if (modalType === "country") {
       updateCountry(payload, {
-        onSuccess: () => {
-          showSuccess("Country updated successfully");
-          onMutationSuccess();
-        },
-        onError: (err: { message?: string }) =>
-          showError(err?.message || "Failed to update country"),
+        onSuccess: () => showSuccess("Country updated successfully"),
+        onError: (err: any) => showError(err?.message || "Update failed"),
       });
-    } else if (modalType === "category") {
+    } else {
       updateSub(payload, {
-        onSuccess: () => {
-          showSuccess("Category updated successfully");
-          onMutationSuccess();
-        },
-        onError: (err: { message?: string }) =>
-          showError(err?.message || "Failed to update category"),
+        onSuccess: () => showSuccess("Category updated successfully"),
+        onError: (err: any) => showError(err?.message || "Update failed"),
       });
     }
-  };
+  }, [
+    editingId,
+    formData.name,
+    modalType,
+    showError,
+    showSuccess,
+    updateCountry,
+    updateSub,
+  ]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!editingId) return;
     if (modalType === "country") {
       deleteCountry({ id: editingId });
     } else {
       deleteSub({ id: editingId });
     }
-  };
+  }, [deleteCountry, deleteSub, editingId, modalType]);
 
   // ─── Bubble Mappings (Sync with API) ───────────────────────────────────────
 
   const countryBubbles = useMemo(() => {
     return countries
-      .filter((c) =>
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+      .filter((c) => c.name.toLowerCase().includes(searchQuery.toLowerCase()))
       .map((c, i) => ({
         id: c.id || `country-${i}`,
         name: c.name,
@@ -294,13 +294,11 @@ export const CommunityControlCenter = ({
         onClick: () => openEdit("country", c),
         chummeVisualDesign: c.chummeVisualDesign ?? null,
       }));
-  }, [countries, searchQuery]); // Removing openEdit from dependencies as it depends on state that would cause infinite loop if not memoized, but in this case openEdit is a stable function if we use a ref or just ignore it as it's a UI callback.
+  }, [countries, searchQuery, openEdit]);
 
   const categoryBubbles = useMemo(() => {
     return subcategories
-      .filter((s) =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+      .filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
       .map((s, i) => ({
         id: s.id,
         name: s.name,
@@ -313,7 +311,8 @@ export const CommunityControlCenter = ({
         onClick: () => openEdit("category", s),
         chummeVisualDesign: s.chummeVisualDesign ?? null,
       }));
-  }, [subcategories, searchQuery]);
+  }, [subcategories, searchQuery, openEdit]);
+
 
   // ─── Styles ─────────────────────────────────────────────────────────────────
 
@@ -467,11 +466,16 @@ export const CommunityControlCenter = ({
                   <div className="w-10 h-10 border-4 border-[#A53860]/20 border-t-[#A53860] rounded-full animate-spin" />
                 </div>
               ) : (
-                <InteractiveBubbleCanvas bubbles={countryBubbles} isDark={isDark} />
+                <InteractiveBubbleCanvas
+                  bubbles={countryBubbles}
+                  isDark={isDark}
+                />
               )}
               {countries.length === 0 && !loadingCountries && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl mb-4" role="img" aria-label="Globe">🌍</div>
+                  <div className="text-7xl mb-4" role="img" aria-label="Globe">
+                    🌍
+                  </div>
                   <p
                     className={`text-xl font-bold ${isDark ? "text-gray-300" : "text-gray-700"}`}
                   >
@@ -544,11 +548,16 @@ export const CommunityControlCenter = ({
                   <div className="w-10 h-10 border-4 border-[#A53860]/20 border-t-[#A53860] rounded-full animate-spin" />
                 </div>
               ) : (
-                <InteractiveBubbleCanvas bubbles={categoryBubbles} isDark={isDark} />
+                <InteractiveBubbleCanvas
+                  bubbles={categoryBubbles}
+                  isDark={isDark}
+                />
               )}
               {subcategories.length === 0 && !loadingSub && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl mb-4" role="img" aria-label="Target">🎯</div>
+                  <div className="text-7xl mb-4" role="img" aria-label="Target">
+                    🎯
+                  </div>
                   <p
                     className={`text-xl font-bold ${isDark ? "text-gray-300" : "text-gray-700"}`}
                   >
@@ -557,7 +566,9 @@ export const CommunityControlCenter = ({
                   <p
                     className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}
                   >
-                    {isEdit ? "Update existing country/category" : "Configure a new community for the region"}
+                    {isEdit
+                      ? "Update existing country/category"
+                      : "Configure a new community for the region"}
                   </p>
                 </div>
               )}
@@ -598,7 +609,12 @@ export const CommunityControlCenter = ({
                         `${name} ${((percent || 0) * 100).toFixed(0)}%`
                       }
                     >
-                      {countries.map((c, i) => <Cell key={c.id || `cell-${i}`} fill={getColorForId(c.id, i)} />)}
+                      {countries.map((c, i) => (
+                        <Cell
+                          key={c.id || `cell-${i}`}
+                          fill={getColorForId(c.id, i)}
+                        />
+                      ))}
                     </Pie>
                     <Tooltip
                       contentStyle={{

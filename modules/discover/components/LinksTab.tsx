@@ -15,7 +15,7 @@ export const LinksTab = ({ isDarkMode }: LinksTabProps) => {
         >
           Discover Links
         </h2>
-        <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
+        <button className="px-4 py-2 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
           Add Link
         </button>
       </div>

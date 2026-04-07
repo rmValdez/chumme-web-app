@@ -60,7 +60,10 @@ export const FloatingBubble = ({
     onDragStart?.(id);
   };
 
-  const handleDrag = (_e: any, info: any) => {
+  const handleDrag = (
+    _e: MouseEvent | TouchEvent | PointerEvent,
+    info: { point: { x: number; y: number } },
+  ) => {
     if (isDragging.current) {
       onPositionChange(id, { x: info.point.x, y: info.point.y });
     }

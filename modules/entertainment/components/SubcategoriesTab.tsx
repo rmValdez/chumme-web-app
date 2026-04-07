@@ -45,7 +45,7 @@ export const SubcategoriesTab = ({
         </div>
         <button
           onClick={() => setModalData({ type: "create-subcategory" })}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-all"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-all"
         >
           <Plus className="w-4 h-4" /> Add Subcategory
         </button>
@@ -64,7 +64,7 @@ export const SubcategoriesTab = ({
             {/* Main Row */}
             <div className="flex items-center gap-4 px-5 py-4">
               {/* Color accent */}
-              <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#EF88AD] to-[#A53860] flex-shrink-0" />
+              <div className="w-1 h-12 rounded-full bg-linear-to-b from-[#EF88AD] to-[#A53860] shrink-0" />
 
               {/* Info */}
               <div className="flex-1 min-w-0">
@@ -113,7 +113,7 @@ export const SubcategoriesTab = ({
               {sub.discoveryKeywords && sub.discoveryKeywords.length > 0 && (
                 <button
                   onClick={() => toggleKeywords(sub.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
                     expandedKeywords === sub.id
                       ? "bg-[#A53860]/20 text-[#EF88AD] border border-[#A53860]/30"
                       : isDark

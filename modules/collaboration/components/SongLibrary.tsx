@@ -26,7 +26,7 @@ export const SongLibrary = ({
       <div className="mb-4">
         <button
           onClick={onAddSong}
-          className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
+          className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
         >
           <Plus className="w-5 h-5" />
           Add Song

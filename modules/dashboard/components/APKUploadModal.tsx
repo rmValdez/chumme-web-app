@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, FileCheck, Package, AlertCircle } from "lucide-react";
+import { X, Upload, FileCheck, AlertCircle } from "lucide-react";
 import { useSnackbar } from "@/modules/shared/hooks/useSnackbar";
 import { Snackbar } from "@/modules/shared/components/Snackbar";
 import { useTheme } from "next-themes";

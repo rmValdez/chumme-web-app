@@ -57,7 +57,7 @@ export const RoleSelection = ({
           }`}
         >
           <div className="mb-6 flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center">
               <Shield className="w-8 h-8 text-white" />
             </div>
           </div>
@@ -81,7 +81,7 @@ export const RoleSelection = ({
           <button
             type="button"
             onClick={() => onSelectRole("admin")}
-            className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
+            className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
           >
             Continue as Admin
           </button>
@@ -98,7 +98,7 @@ export const RoleSelection = ({
           }`}
         >
           <div className="mb-6 flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#EF88AD] to-[#A53860] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#EF88AD] to-[#A53860] flex items-center justify-center">
               <Users className="w-8 h-8 text-white" />
             </div>
           </div>
@@ -122,7 +122,7 @@ export const RoleSelection = ({
           <button
             type="button"
             onClick={() => onSelectRole("user")}
-            className="w-full h-12 bg-gradient-to-r from-[#EF88AD] to-[#A53860] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
+            className="w-full h-12 bg-linear-to-r from-[#EF88AD] to-[#A53860] hover:opacity-90 text-white font-semibold text-sm rounded-xl transition-all"
           >
             Continue as User
           </button>

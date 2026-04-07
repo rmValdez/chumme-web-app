@@ -418,7 +418,7 @@ export function CommunityControlCenter() {
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === tab.id
-                ? "bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white shadow-lg"
+                ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-lg"
                 : isDarkMode
                   ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -444,7 +444,7 @@ export function CommunityControlCenter() {
             <div className="mb-4">
               <button
                 onClick={() => openCreateModal("country")}
-                className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
+                className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
               >
                 <Plus className="w-5 h-5" />
                 Add Country
@@ -573,7 +573,7 @@ export function CommunityControlCenter() {
             <div className="mb-4">
               <button
                 onClick={() => openCreateModal("category")}
-                className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
+                className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
               >
                 <Plus className="w-5 h-5" />
                 Create Category
@@ -1315,7 +1315,7 @@ export function CommunityControlCenter() {
                 <button
                   onClick={handleCreate}
                   disabled={isSubmitting}
-                  className="flex-1 h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>

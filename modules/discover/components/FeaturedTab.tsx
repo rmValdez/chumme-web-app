@@ -17,7 +17,7 @@ export const FeaturedTab = ({ isDarkMode }: FeaturedTabProps) => {
         >
           Featured Discover Posts
         </h2>
-        <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
+        <button className="px-4 py-2 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity">
           Feature Post
         </button>
       </div>
@@ -38,7 +38,7 @@ export const FeaturedTab = ({ isDarkMode }: FeaturedTabProps) => {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-bold text-sm">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-bold text-sm">
                     #{post.rank}
                   </span>
                   <h3

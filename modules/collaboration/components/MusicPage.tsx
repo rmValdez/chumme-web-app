@@ -68,7 +68,7 @@ export const MusicPage = () => {
       <div className="mb-6">
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 flex items-center gap-2"
+          className="px-6 py-3 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> Add Music
         </button>
@@ -232,7 +232,7 @@ export const MusicPage = () => {
                   </button>
                   <button
                     onClick={() => setShowAddModal(false)}
-                    className="flex-1 h-11 rounded-xl font-semibold bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white hover:opacity-90"
+                    className="flex-1 h-11 rounded-xl font-semibold bg-linear-to-r from-[#A53860] to-[#670D2F] text-white hover:opacity-90"
                   >
                     Add Song
                   </button>

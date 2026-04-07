@@ -37,7 +37,7 @@ export const Dialog = ({
       {/* Top Gradient Accent */}
       <div
         className={cn(
-          "absolute top-0 left-0 right-0 h-24 bg-gradient-to-b opacity-15 pointer-events-none",
+          "absolute top-0 left-0 right-0 h-24 bg-linear-to-b opacity-15 pointer-events-none",
           isDestructive
             ? "from-red-500 to-transparent"
             : "from-brand-vibrant to-transparent",
@@ -51,8 +51,8 @@ export const Dialog = ({
             className={cn(
               "w-12 h-12 rounded-full flex items-center justify-center text-white",
               isDestructive
-                ? "bg-gradient-to-br from-red-500 to-red-700"
-                : "bg-gradient-to-br from-brand-vibrant to-brand-core",
+                ? "bg-linear-to-br from-red-500 to-red-700"
+                : "bg-linear-to-br from-brand-vibrant to-brand-core",
             )}
           >
             <svg

@@ -25,10 +25,11 @@ Avatar.displayName = "Avatar";
 export type AvatarImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 export const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, alt, ...props }, ref) => {
     return (
       <img
         ref={ref}
+        alt={alt || ""}
         className={cn("aspect-square h-full w-full object-cover", className)}
         {...props}
       />

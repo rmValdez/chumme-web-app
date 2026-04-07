@@ -32,7 +32,7 @@ const CommunityCard = ({
     >
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
-          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white text-xl">
+          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white text-xl">
             {community.thumbnail}
           </div>
           <div>

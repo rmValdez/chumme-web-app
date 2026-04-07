@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
-import { AuthInitializer } from "@/modules/shared/components/AuthInitializer";
-import { ThemeProvider } from "@/modules/shared/components/ThemeProvider";
-import { QueryProvider } from "@/modules/shared/providers/QueryProvider";
+import { Providers } from "@/modules/shared/providers/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,44 +19,9 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | Chumme",
-    default: "Chumme | Premium Social Platform",
-  },
-  description:
-    "Experience the next generation of social interaction with Chumme. A premium mobile and web ecosystem.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://www.chumme.app",
-  ),
-  openGraph: {
-    title: "Chumme | Premium Social Platform",
-    description:
-      "Experience the next generation of social interaction with Chumme.",
-    url: "https://www.chumme.app",
-    siteName: "Chumme",
-    images: [
-      {
-        url: "/og-image.png", // Fallback, will require a real image in public/
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Chumme | Premium Social Platform",
-    description:
-      "Experience the next generation of social interaction with Chumme.",
-    images: ["/og-image.png"], // Standardized OG image
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
-};
+import { sharedMetadata } from "./metadata";
+
+export const metadata: Metadata = sharedMetadata;
 
 export interface RootLayoutProps {
   children: React.ReactNode;
@@ -71,16 +34,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background-primary text-text-primary`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <QueryProvider>
-            <AuthInitializer>{children}</AuthInitializer>
-          </QueryProvider>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

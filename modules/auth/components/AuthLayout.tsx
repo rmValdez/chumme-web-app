@@ -36,7 +36,7 @@ export const AuthLayout = ({
     >
       <div
         className={cn(
-          "absolute inset-0 transition-all duration-300 bg-gradient-to-br",
+          "absolute inset-0 transition-all duration-300 bg-linear-to-br",
           isDark
             ? "from-[#1a0510] via-[#0a0a0a] to-[#1a0510]"
             : "from-[#fce7f3] via-[#fce1ed] to-[#e9d5fd]",
@@ -105,7 +105,7 @@ export const AuthLayout = ({
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute inset-0 -m-8 blur-2xl rounded-full bg-gradient-to-br from-[#EF88AD] to-[#A53860] opacity-30"
+                className="absolute inset-0 -m-8 blur-2xl rounded-full bg-linear-to-br from-[#EF88AD] to-[#A53860] opacity-30"
               />
               <Link
                 href="/"

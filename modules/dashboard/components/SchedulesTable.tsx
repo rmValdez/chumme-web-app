@@ -186,7 +186,7 @@ export function SchedulesTable({
                           onClick={() => onTrigger(schedule.id)}
                           disabled={isTriggeringThis}
                           title="Trigger crawl now"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white text-xs font-medium hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white text-xs font-medium hover:shadow-md transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           {isTriggeringThis ? (
                             <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />

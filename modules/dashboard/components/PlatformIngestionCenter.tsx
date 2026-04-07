@@ -244,7 +244,7 @@ export function PlatformIngestionCenter() {
           <button
             onClick={handleManualCrawl}
             disabled={manualCrawlPending}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-linear-to-r from-[#A53860] to-[#670D2F] text-white hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {manualCrawlPending ? (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -315,7 +315,7 @@ export function PlatformIngestionCenter() {
           <button
             onClick={handleTargetSearch}
             disabled={!targetIdInput.trim()}
-            className="px-4 h-11 rounded-xl text-sm font-medium bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white disabled:opacity-50 hover:shadow-md transition-all"
+            className="px-4 h-11 rounded-xl text-sm font-medium bg-linear-to-r from-[#A53860] to-[#670D2F] text-white disabled:opacity-50 hover:shadow-md transition-all"
           >
             Search
           </button>

@@ -557,7 +557,7 @@ function UsersTab({
           </h3>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Create User
@@ -617,7 +617,7 @@ function UsersTab({
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10 border-2 border-[#A53860]">
                         <AvatarImage src={user.profilePhoto || undefined} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#A53860] to-[#670D2F] text-white font-semibold">
+                        <AvatarFallback className="bg-linear-to-br from-[#A53860] to-[#670D2F] text-white font-semibold">
                           {user.username
                             .split(" ")
                             .map((n) => n[0])
@@ -1071,7 +1071,7 @@ function FeaturedTab({
                         ? isDarkMode
                           ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
                           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                        : "bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white hover:opacity-90"
+                        : "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white hover:opacity-90"
                     }`}
                   >
                     {artist.isFeatured ? "Remove Feature" : "Feature Profile"}
@@ -1258,7 +1258,7 @@ function CreateUserModal({
           <div className="flex items-center gap-6">
             <Avatar className="w-20 h-20 border-2 border-[#A53860]">
               <AvatarImage src="" />
-              <AvatarFallback className="bg-gradient-to-br from-[#A53860] to-[#670D2F] text-white text-2xl font-semibold">
+              <AvatarFallback className="bg-linear-to-br from-[#A53860] to-[#670D2F] text-white text-2xl font-semibold">
                 {formData.fullName
                   ? formData.fullName
                       .split(" ")
@@ -1494,7 +1494,7 @@ function CreateUserModal({
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2 rounded-lg bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity"
+            className="px-5 py-2 rounded-lg bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-opacity"
           >
             Create User
           </button>

@@ -293,8 +293,12 @@ export const EntertainmentModal = ({
                 className={`mb-6 text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
               >
                 Are you sure you want to delete{" "}
-                <span className="font-semibold">{"\""}{modalData.item?.name}{"\""}</span>?
-                This action cannot be undone.
+                <span className="font-semibold">
+                  {'"'}
+                  {modalData.item?.name}
+                  {'"'}
+                </span>
+                ? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button

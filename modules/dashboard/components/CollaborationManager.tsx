@@ -64,7 +64,7 @@ export const CollaborationManager = () => {
             onClick={() => setActiveTab(tab.id as TabId)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === tab.id
-                ? "bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white shadow-lg"
+                ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-lg"
                 : isDarkMode
                   ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"

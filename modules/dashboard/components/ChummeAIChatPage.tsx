@@ -161,7 +161,7 @@ export const ChummeAIChatPage = () => {
               onClick={() => setAiChatEnabled(!aiChatEnabled)}
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 aiChatEnabled
-                  ? "bg-gradient-to-r from-[#A53860] to-[#670D2F]"
+                  ? "bg-linear-to-r from-[#A53860] to-[#670D2F]"
                   : isDarkMode
                     ? "bg-gray-700"
                     : "bg-gray-300"
@@ -205,7 +205,7 @@ export const ChummeAIChatPage = () => {
               onClick={() => setVoiceChatEnabled(!voiceChatEnabled)}
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 voiceChatEnabled
-                  ? "bg-gradient-to-r from-[#A53860] to-[#670D2F]"
+                  ? "bg-linear-to-r from-[#A53860] to-[#670D2F]"
                   : isDarkMode
                     ? "bg-gray-700"
                     : "bg-gray-300"
@@ -249,7 +249,7 @@ export const ChummeAIChatPage = () => {
               onClick={() => setLiveAvatarEnabled(!liveAvatarEnabled)}
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 liveAvatarEnabled
-                  ? "bg-gradient-to-r from-[#A53860] to-[#670D2F]"
+                  ? "bg-linear-to-r from-[#A53860] to-[#670D2F]"
                   : isDarkMode
                     ? "bg-gray-700"
                     : "bg-gray-300"
@@ -283,7 +283,7 @@ export const ChummeAIChatPage = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === tab.id
-                ? "bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white shadow-lg"
+                ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-lg"
                 : isDarkMode
                   ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -306,7 +306,7 @@ export const ChummeAIChatPage = () => {
           >
             <button
               onClick={() => setShowCreateModal(true)}
-              className="w-full h-12 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold mb-6 flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
+              className="w-full h-12 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold mb-6 flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
             >
               <Plus className="w-5 h-5" />
               Create AI Artist
@@ -326,7 +326,7 @@ export const ChummeAIChatPage = () => {
                   } backdrop-blur-xl hover:shadow-xl transition-shadow`}
                 >
                   <div className="flex flex-col items-center mb-4">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center text-white font-bold text-2xl mb-3">
+                    <div className="w-20 h-20 rounded-full bg-linear-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center text-white font-bold text-2xl mb-3">
                       {artist.avatar}
                     </div>
                     <h3
@@ -396,7 +396,7 @@ export const ChummeAIChatPage = () => {
                   <button
                     className={`w-full h-9 rounded-lg flex items-center justify-center gap-2 text-sm font-medium mt-3 transition-colors ${
                       artist.status === "Active"
-                        ? "bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white hover:shadow-md"
+                        ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white hover:shadow-md"
                         : isDarkMode
                           ? "bg-gray-700 text-gray-400 hover:bg-gray-600"
                           : "bg-gray-100 text-gray-500 hover:bg-gray-200"
@@ -535,7 +535,7 @@ export const ChummeAIChatPage = () => {
                   >
                     Sample Prompts
                   </label>
-                  <button className="px-3 py-1 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-lg text-xs font-medium flex items-center gap-1">
+                  <button className="px-3 py-1 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-lg text-xs font-medium flex items-center gap-1">
                     <Plus className="w-3 h-3" /> Add
                   </button>
                 </div>
@@ -667,7 +667,7 @@ export const ChummeAIChatPage = () => {
                   </select>
                 </div>
               </div>
-              <button className="w-full h-12 mt-6 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow">
+              <button className="w-full h-12 mt-6 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow">
                 <Upload className="w-5 h-5" />
                 Upload Voice Sample
               </button>
@@ -776,7 +776,7 @@ export const ChummeAIChatPage = () => {
                       </select>
                     </div>
                   ))}
-                  <button className="w-full h-10 bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white rounded-lg font-medium text-sm hover:shadow-lg transition-shadow">
+                  <button className="w-full h-10 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-lg font-medium text-sm hover:shadow-lg transition-shadow">
                     Preview Avatar
                   </button>
                 </div>
@@ -913,7 +913,7 @@ export const ChummeAIChatPage = () => {
                   </button>
                   <button
                     onClick={handleCreateArtist}
-                    className="flex-1 h-11 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:shadow-lg transition-shadow"
+                    className="flex-1 h-11 rounded-xl bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:shadow-lg transition-shadow"
                   >
                     Create
                   </button>

@@ -100,7 +100,7 @@ const StatCard: FC<StatCardProps> = ({
     <div className="flex items-center justify-between mb-4">
       <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
       <div
-        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center`}
+        className={`w-10 h-10 rounded-xl bg-linear-to-br ${color} flex items-center justify-center`}
       >
         <Icon className="w-5 h-5 text-white" />
       </div>
@@ -241,7 +241,7 @@ export const DashboardOverview = () => {
               key={c.name}
               className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
             >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EF88AD] to-[#A53860] flex items-center justify-center text-white font-bold flex-shrink-0">
+              <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#EF88AD] to-[#A53860] flex items-center justify-center text-white font-bold shrink-0">
                 {c.name.substring(0, 2)}
               </div>
               <div>

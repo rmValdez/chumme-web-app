@@ -45,7 +45,7 @@ export const CategoriesTab = ({
         </div>
         <button
           onClick={() => setModalData({ type: "create-category" })}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-all"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 transition-all"
         >
           <Plus className="w-4 h-4" /> Add Category
         </button>
@@ -64,7 +64,7 @@ export const CategoriesTab = ({
             {/* Main Row */}
             <div className="flex items-center gap-4 px-5 py-4">
               {/* Color accent */}
-              <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#A53860] to-[#670D2F] flex-shrink-0" />
+              <div className="w-1 h-12 rounded-full bg-linear-to-b from-[#A53860] to-[#670D2F] shrink-0" />
 
               {/* Info */}
               <div className="flex-1 min-w-0">
