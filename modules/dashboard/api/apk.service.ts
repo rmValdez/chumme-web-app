@@ -1,4 +1,6 @@
-import { api } from "@/modules/shared/api/api-client";
+import { api, getApiBaseUrl } from "@/modules/shared/api/api-client";
+import { ACCESS_TOKEN } from "@/modules/shared/constants/storage-keys";
+import { getStorageData } from "@/modules/shared/utils/storage";
 
 export interface APKRelease {
   id: string;
@@ -55,13 +57,10 @@ export const apkService = {
     }
 
     // Use fetch directly — apisauce can strip Content-Type boundary on FormData
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
-    // Token is stored under "access_token" (see modules/shared/constants/storage-keys.ts)
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("access_token")
-        : null;
+    const baseUrl = getApiBaseUrl();
+
+    const token = await getStorageData<string>(ACCESS_TOKEN);
+
 
     const response = await fetch(`${baseUrl}/api/v1/apk/upload`, {
       method: "POST",
@@ -98,10 +97,10 @@ export const apkService = {
   },
 
   setLatest: async (id: string): Promise<APKRelease> => {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const baseUrl = getApiBaseUrl();
+
+    const token = await getStorageData<string>(ACCESS_TOKEN);
+
 
     const response = await fetch(`${baseUrl}/api/v1/apk/${id}/set-latest`, {
       method: "PATCH",
@@ -118,10 +117,10 @@ export const apkService = {
   },
 
   setStable: async (id: string): Promise<APKRelease> => {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const baseUrl = getApiBaseUrl();
+
+    const token = await getStorageData<string>(ACCESS_TOKEN);
+
 
     const response = await fetch(`${baseUrl}/api/v1/apk/${id}/set-stable`, {
       method: "PATCH",
@@ -138,10 +137,10 @@ export const apkService = {
   },
 
   getDownloadUrl: async (id: string): Promise<string> => {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const baseUrl = getApiBaseUrl();
+
+    const token = await getStorageData<string>(ACCESS_TOKEN);
+
 
     const response = await fetch(`${baseUrl}/api/v1/apk/download/${id}`, {
       method: "GET",

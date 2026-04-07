@@ -14,8 +14,18 @@ import {
   removeStorageData,
 } from "@/modules/shared/utils/storage";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
+export const getApiBaseUrl = () => {
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost") {
+    return ""; // Use relative URL on Vercel
+  }
+  return (process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002").replace(
+    /\/$/,
+    "",
+  );
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
 
 // In-memory token cache to avoid hitting localStorage on every request
 let _cachedAccessToken: string | null = null;
