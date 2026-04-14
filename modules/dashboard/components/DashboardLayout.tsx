@@ -41,14 +41,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   } = useDashboardStore();
 
   useEffect(() => {
-    const currentNavItem = NAV_ITEMS.find((item) => item.href === pathname);
-    if (currentNavItem) {
-      setActiveNav(currentNavItem.label);
-    } else if (pathname === "/dashboard") {
-      setActiveNav("Dashboard");
-    } else if (pathname.includes("profile")) {
-      setActiveNav("Profile");
-    } else if (pathname.includes("/dashboard/music")) {
+    if (pathname.includes("/dashboard/music")) {
       setMusicExpanded(true);
       if (pathname.includes("/karaoke")) {
         setActiveNav("Karaoke");
@@ -60,16 +53,29 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     } else if (pathname.includes("/dashboard/settings")) {
       if (pathname.endsWith("/roles")) {
         setActiveNav("Roles & Permissions");
-        setSettingsExpanded(true);
       } else if (pathname.endsWith("/apk")) {
         setActiveNav("APK Download");
-        setSettingsExpanded(true);
       } else {
         setActiveNav("Settings");
-        setSettingsExpanded(true);
+      }
+      setSettingsExpanded(true);
+    } else if (pathname.includes("profile")) {
+      setActiveNav("Profile");
+    } else {
+      const currentNavItem = NAV_ITEMS.find((item) => item.href === pathname);
+      const parentNavItem = NAV_ITEMS.find((item) =>
+        item.children?.some((child) => child.href === pathname),
+      );
+
+      if (currentNavItem) {
+        setActiveNav(currentNavItem.label);
+      } else if (parentNavItem) {
+        setActiveNav(parentNavItem.label);
+      } else if (pathname === "/dashboard") {
+        setActiveNav("Dashboard");
       }
     }
-  }, [pathname, setActiveNav, setSettingsExpanded]);
+  }, [pathname, setActiveNav, setSettingsExpanded, setMusicExpanded]);
 
   const handleSignOut = async () => {
     try {
@@ -355,7 +361,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           }`}
         >
           {/* Search */}
-          <div className="flex-1 max-w-xl relative">
+          <div className="flex-1 max-w-xl relative ml-auto">
             <Search
               className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none ${isDark ? "text-gray-500" : "text-gray-400"}`}
             />
