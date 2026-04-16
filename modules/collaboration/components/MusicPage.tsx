@@ -16,7 +16,7 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [songTitle, setSongTitle] = useState("");
-  const [artist, setArtist] = useState("");
+
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [artistError, setArtistError] = useState(false);
   const [mp3Error, setMp3Error] = useState(false);
@@ -35,7 +35,7 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
 
   const resetForm = () => {
     setSongTitle("");
-    setArtist("");
+
     setSelectedArtistId("");
     setAudioFile(null);
     setArtistError(false);
@@ -59,7 +59,7 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
       });
       resetForm();
       setShowAddModal(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[MusicPage] Upload error:", err);
     }
   };
@@ -67,7 +67,7 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
   const handleDelete = async (id: string) => {
     try {
       await deleteSong.mutateAsync(id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[MusicPage] Delete error:", err);
     }
   };
@@ -384,7 +384,7 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
 
                 {uploadSong.isError && (
                   <p className="text-red-500 text-sm">
-                    {(uploadSong.error as any)?.message || "Upload failed."}
+                    {uploadSong.error instanceof Error ? uploadSong.error.message : "Upload failed."}
                   </p>
                 )}
 

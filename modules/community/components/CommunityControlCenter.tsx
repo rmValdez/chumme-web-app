@@ -186,7 +186,7 @@ export const CommunityControlCenter = ({
       setEditingId(item.id);
       const color =
         item.color ??
-        (item.chummeVisualDesign?.colorSet as any)?.primary ??
+        (item.chummeVisualDesign?.colorSet as Record<string, string> | undefined)?.primary ??
         "#D3427B";
       setFormData({
         name: item.name,

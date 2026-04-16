@@ -54,7 +54,7 @@ export const musicService = {
     );
     if (!res.ok)
       throw new Error(
-        (res.data as any)?.message || "Failed to fetch music",
+        (res.data as Record<string, string> | undefined)?.message || "Failed to fetch music",
       );
     return res.data!;
   },
@@ -109,7 +109,7 @@ export const musicService = {
     const res = await api.delete(`/api/v1/music/delete/${id}`);
     if (!res.ok)
       throw new Error(
-        (res.data as any)?.message || "Failed to delete song",
+        (res.data as Record<string, string> | undefined)?.message || "Failed to delete song",
       );
   },
 };

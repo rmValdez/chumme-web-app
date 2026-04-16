@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { musicService, type ArtistOption } from "@/modules/collaboration/api/music.service";
+import { musicService } from "@/modules/collaboration/api/music.service";
 
 const SONGS_KEY  = ["music-songs"];
 const KARAOKE_KEY = ["music-karaoke"];

@@ -42,7 +42,7 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
   const [loadingAction, setLoadingAction] = useState<Record<string, string>>(
     {},
   );
-  const { messages, dismiss, showDownload, showSuccess, showError } =
+  const { messages, dismiss, showDownload, showUpload, showSuccess, showError } =
     useSnackbar();
 
   const { data: releases, isLoading, isError } = useAPKReleases();
@@ -58,14 +58,13 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
   const totalVersions = releases?.length ?? 0;
   const lastUpdated = releases?.[0]?.updatedAt
     ? new Date(releases[0].updatedAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+    })
     : "—";
 
-  const cardClass = `p-6 rounded-xl border transition-all ${
-    isDark ? "bg-gray-800/80 border-gray-700/50" : "bg-white border-gray-200"
-  }`;
+  const cardClass = `p-6 rounded-xl border transition-all ${isDark ? "bg-gray-800/80 border-gray-700/50" : "bg-white border-gray-200"
+    }`;
 
   const handleUpload = async (
     file: File,
@@ -79,13 +78,30 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
     }
   };
 
-  const handleDownload = async (id: string, fileName: string) => {
+  const handleDownload = async (id: string, version: string) => {
     try {
-      const url = await downloadMutation.mutateAsync(id);
-      window.open(url, "_blank");
-      showDownload(fileName);
-    } catch (err: unknown) {
-      showError("Download Failed", (err as Error).message);
+      showUpload("Preparing download...");
+      const result = await downloadMutation.mutateAsync(id);
+      const url =
+        typeof result === "string" ? result : result?.data?.url ?? result?.url;
+      if (!url) return showError("Download URL not available");
+
+      const response = await fetch(url, { mode: "cors" });
+      if (!response.ok) throw new Error("Failed to fetch APK");
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `chumme v${version}.apk`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
+      showSuccess("Download started");
+    } catch {
+      showError("Failed to download APK");
     }
   };
 
@@ -130,6 +146,8 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
     }
   };
 
+  console.log("release object:", releases);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -163,11 +181,10 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mb-6 p-4 rounded-xl border flex items-center gap-4 ${
-            isDark
+          className={`mb-6 p-4 rounded-xl border flex items-center gap-4 ${isDark
               ? "bg-gray-800/80 border-gray-700/50"
               : "bg-white border-gray-200"
-          }`}
+            }`}
         >
           <motion.div
             animate={{ rotate: 360 }}
@@ -251,16 +268,14 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.4 }}
-        className={`mb-8 p-4 rounded-xl border flex items-start gap-3 ${
-          isDark
+        className={`mb-8 p-4 rounded-xl border flex items-start gap-3 ${isDark
             ? "bg-blue-900/20 border-blue-800/40"
             : "bg-blue-50 border-blue-200"
-        }`}
+          }`}
       >
         <AlertCircle
-          className={`w-5 h-5 shrink-0 mt-0.5 ${
-            isDark ? "text-blue-400" : "text-blue-600"
-          }`}
+          className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? "text-blue-400" : "text-blue-600"
+            }`}
         />
         <div>
           <p
@@ -307,32 +322,30 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
           const changesList: string[] = Array.isArray(release.whatIsNew)
             ? release.whatIsNew.filter((c: string) => c.trim())
             : typeof (release as unknown as { releaseNotes?: string })
-                  .releaseNotes === "string"
+              .releaseNotes === "string"
               ? (release as unknown as { releaseNotes: string }).releaseNotes
-                  .split("\n")
-                  .filter((c: string) => c.trim())
+                .split("\n")
+                .filter((c: string) => c.trim())
               : [];
 
           return (
             <div
               key={release.id}
-              className={`relative rounded-2xl border overflow-hidden transition-all ${
-                release.isLatest
+              className={`relative rounded-2xl border overflow-hidden transition-all ${release.isLatest
                   ? "border-[#A53860]/60 bg-white/5"
                   : release.isStable
                     ? "border-green-500/40 bg-white/5"
                     : "border-white/10 bg-white/5"
-              }`}
+                }`}
             >
               {/* Left accent bar */}
               <div
-                className={`absolute left-0 top-0 bottom-0 w-1 ${
-                  release.isLatest
+                className={`absolute left-0 top-0 bottom-0 w-1 ${release.isLatest
                     ? "bg-linear-to-b from-[#A53860] to-[#D3427B]"
                     : release.isStable
                       ? "bg-linear-to-b from-green-500 to-green-400"
                       : "bg-white/10"
-                }`}
+                  }`}
               />
 
               <div className="flex items-start justify-between px-8 py-6 gap-6">
@@ -403,9 +416,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                       </svg>
                       {release.createdAt
                         ? new Date(release.createdAt).toLocaleDateString(
-                            "en-US",
-                            { month: "short", day: "numeric", year: "numeric" },
-                          )
+                          "en-US",
+                          { month: "short", day: "numeric", year: "numeric" },
+                        )
                         : "—"}
                     </span>
                     <span className="flex items-center gap-1.5">

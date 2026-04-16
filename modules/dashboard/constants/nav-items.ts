@@ -11,6 +11,7 @@ import {
   Headphones,
   Mic2,
   Music2,
+  UserRound,
 } from "lucide-react";
 import type React from "react";
 
@@ -51,6 +52,7 @@ export const NAV_ITEMS: NavItem[] = [
     children: [
       { label: "Karaoke", href: "/dashboard/music/karaoke", icon: Mic2 },
       { label: "Song", href: "/dashboard/music/song", icon: Music2 },
+      { label: "Artist", href: "/dashboard/music/artist", icon: UserRound },
     ],
   },
   {

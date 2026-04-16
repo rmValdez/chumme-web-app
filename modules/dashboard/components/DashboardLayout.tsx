@@ -9,12 +9,13 @@ import {
   LogOut,
   ChevronDown,
   Settings,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { NAV_ITEMS } from "@/modules/dashboard/constants/nav-items";
 import { useDashboardStore } from "@/modules/dashboard/store/useDashboardStore";
@@ -30,6 +31,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const logout = useAuthStore((s) => s.logout);
   const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
+
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const {
     activeNav,
@@ -54,6 +58,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         setActiveNav("Karaoke");
       } else if (pathname.includes("/song")) {
         setActiveNav("Song");
+      } else if (pathname.includes("/artist")) {
+        setActiveNav("Artist");
       } else {
         setActiveNav("Music");
       }
@@ -69,7 +75,17 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         setSettingsExpanded(true);
       }
     }
-  }, [pathname, setActiveNav, setSettingsExpanded]);
+  }, [pathname, setActiveNav, setSettingsExpanded, setMusicExpanded]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -117,7 +133,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             const isMusicActive =
               activeNav === "Music" ||
               activeNav === "Karaoke" ||
-              activeNav === "Song";
+              activeNav === "Song" ||
+              activeNav === "Artist";
 
             if (isMusic) {
               return (
@@ -383,8 +400,79 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </button>
 
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full border-2 border-[#A53860] bg-linear-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center text-white text-sm font-bold shrink-0">
-            JD
+          <div className="relative" ref={profileMenuRef}>
+            <button
+              onClick={() => setProfileMenuOpen((prev) => !prev)}
+              className="w-10 h-10 rounded-full border-2 border-[#A53860] bg-linear-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center text-white text-sm font-bold shrink-0 cursor-pointer"
+            >
+              JD
+            </button>
+
+            {/* Dropdown */}
+            <AnimatePresence>
+              {profileMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className={`absolute right-0 top-full mt-2 w-64 rounded-2xl shadow-2xl z-50 overflow-hidden border ${
+                    isDark
+                      ? "bg-gray-900 border-gray-700/50"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
+                  {/* Profile Info */}
+                  <div className={`px-4 py-4 border-b ${isDark ? "border-gray-700/50" : "border-gray-200"}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#A53860] to-[#670D2F] flex items-center justify-center text-white font-bold text-lg">
+                        JD
+                      </div>
+                      <div>
+                        <p className={`text-sm font-bold ${isDark ? "text-white" : "text-gray-900"}`}>John Doe</p>
+                        <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>john@chumme.com</p>
+                        <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#A53860]/20 text-[#EF88AD]">
+                          Admin
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="py-2">
+                    {[
+                      { icon: User, label: "View Profile", action: () => router.push("/dashboard/profile") },
+                      { icon: Settings, label: "Settings", action: () => router.push("/dashboard/settings") },
+                      { icon: Bell, label: "Notifications", action: () => {} },
+                    ].map(({ icon: Icon, label, action }) => (
+                      <button
+                        key={label}
+                        onClick={() => { action(); setProfileMenuOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                          isDark
+                            ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Divider + Logout */}
+                  <div className={`border-t py-2 ${isDark ? "border-gray-700/50" : "border-gray-200"}`}>
+                    <button
+                      onClick={() => { setProfileMenuOpen(false); handleSignOut(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/20 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.header>
 

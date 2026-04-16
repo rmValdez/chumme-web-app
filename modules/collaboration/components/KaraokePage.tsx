@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit, Trash2, Eye, X, RefreshCw } from "lucide-react";
+import { Plus, Trash2, X, RefreshCw } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useKaraokeSongs, useUploadSong, useDeleteSong } from "@/modules/collaboration/hooks/useMusic";
+import { useKaraokeSongs, useUploadSong, useDeleteSong, useArtists } from "@/modules/collaboration/hooks/useMusic";
 import type { KaraokeTabId } from "@/modules/collaboration/types";
 
 interface KaraokePageProps {
@@ -19,7 +19,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
   const [activeTab, setActiveTab] = useState<KaraokeTabId>("songs");
 
   const [songTitle, setSongTitle]     = useState("");
-  const [artist, setArtist]           = useState("");
+  const [selectedArtistId, setSelectedArtistId] = useState<string>("");
   const [audioFile, setAudioFile]     = useState<File | null>(null);
   const [lyricsFile, setLyricsFile]   = useState<File | null>(null);
   const [videoFile, setVideoFile]     = useState<File | null>(null);
@@ -30,6 +30,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
   const { data, isLoading, isError, refetch } = useKaraokeSongs();
   const uploadSong  = useUploadSong(true);
   const deleteSong  = useDeleteSong(true);
+  const { data: artists = [] } = useArtists();
 
   const songs = data?.data ?? [];
 
@@ -38,8 +39,11 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
   }`;
 
   const resetForm = () => {
-    setSongTitle(""); setArtist("");
-    setAudioFile(null); setLyricsFile(null); setVideoFile(null);
+    setSongTitle("");
+    setSelectedArtistId("");
+    setAudioFile(null);
+    setLyricsFile(null);
+    setVideoFile(null);
     setArtistError(false);
     setMp3Error(false);
     setJsonError(false);
@@ -47,7 +51,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
 
   const handleSave = async () => {
     if (!songTitle.trim() || !audioFile || !lyricsFile) return;
-    if (!artist.trim()) {
+    if (!selectedArtistId) {
       setArtistError(true);
       return;
     }
@@ -55,11 +59,14 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
     try {
       await uploadSong.mutateAsync({
         file: audioFile,
-        meta: { title: songTitle.trim() },
+        meta: {
+          title: songTitle.trim(),
+          musicArtistId: selectedArtistId,
+        },
       });
       resetForm();
       setShowAddModal(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[KaraokePage] Upload error:", err);
     }
   };
@@ -67,7 +74,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
   const handleDelete = async (id: string) => {
     try {
       await deleteSong.mutateAsync(id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[KaraokePage] Delete error:", err);
     }
   };
@@ -330,20 +337,25 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
                     <label className={labelClass}>
                       Artist <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="e.g., BTS"
-                      value={artist}
+                    <select
+                      value={selectedArtistId}
                       onChange={(e) => {
-                        setArtist(e.target.value);
-                        if (e.target.value.trim()) setArtistError(false);
+                        setSelectedArtistId(e.target.value);
+                        if (e.target.value) setArtistError(false);
                       }}
                       className={`w-full h-11 px-4 rounded-xl border text-sm outline-none transition-all ${
                         isDark
-                          ? "bg-[#243050] border-gray-600/50 text-white placeholder-gray-500 focus:border-[#A53860]"
-                          : "bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-[#A53860]"
+                          ? "bg-[#243050] border-gray-600/50 text-white focus:border-[#A53860]"
+                          : "bg-gray-50 border-gray-200 text-gray-900 focus:border-[#A53860]"
                       } focus:ring-2 focus:ring-[#A53860]/10`}
-                    />
+                    >
+                      <option value="">Select artist...</option>
+                      {artists.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name}
+                        </option>
+                      ))}
+                    </select>
                     {artistError && (
                       <p className="text-red-500 text-xs mt-1">
                         Artist is required
@@ -521,7 +533,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
                 {/* Error */}
                 {uploadSong.isError && (
                   <p className="text-red-500 text-sm">
-                    {(uploadSong.error as any)?.message || "Upload failed. Please try again."}
+                    {uploadSong.error instanceof Error ? uploadSong.error.message : "Upload failed. Please try again."}
                   </p>
                 )}
 
@@ -542,7 +554,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
                     onClick={handleSave}
                     disabled={
                       !songTitle.trim() ||
-                      !artist.trim() ||
+                      !selectedArtistId ||
                       !audioFile ||
                       !lyricsFile ||
                       uploadSong.isPending
