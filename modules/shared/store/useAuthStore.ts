@@ -80,9 +80,9 @@ async function persistAuth(
 
   // Sanitize user object to ensure no sensitive data is stored
   const sanitizedUser = { ...res.user };
-  // @ts-ignore - removing potentially existing sensitive fields
+  // @ts-expect-error - removing potentially existing sensitive fields
   delete sanitizedUser.password;
-  // @ts-ignore
+  // @ts-expect-error - token field may not exist on User type but should be removed if present
   delete sanitizedUser.token;
 
   await Promise.all([
@@ -296,7 +296,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const updated = { ...currentUser, ...data };
       
       // Sanitize before storage
-      // @ts-ignore
+      // @ts-expect-error - password field may not exist on User type but should be removed if present
       delete updated.password;
       
       set({ user: updated });
