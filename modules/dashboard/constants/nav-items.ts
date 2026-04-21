@@ -56,6 +56,11 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    label: "Onboarding",
+    href: "/dashboard/onboarding",
+    icon: PlayCircle,
+  },
+  {
     label: "Music",
     href: "#",
     icon: Headphones,
