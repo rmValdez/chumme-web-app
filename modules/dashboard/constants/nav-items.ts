@@ -13,6 +13,7 @@ import {
   Music2,
   UserRound,
   ClipboardList,
+  PlayCircle,
   Settings,
   FolderOpen,
   ShieldCheck,

@@ -13,6 +13,8 @@ import {
   FolderOpen,
   ShieldCheck,
   Download,
+  Menu,
+  X,
   PlayCircle,
 } from "lucide-react";
 import Image from "next/image";
