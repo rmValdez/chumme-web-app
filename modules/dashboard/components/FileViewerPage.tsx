@@ -107,8 +107,8 @@ const FileViewerPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">File Viewer</h1>
-          <p className="text-sm mt-1 text-gray-400">Upload, preview, and manage your files</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">File Viewer</h1>
+          <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">Upload, preview, and manage your files</p>
         </div>
         <button
           onClick={() => setUploadModalOpen(true)}
@@ -132,14 +132,14 @@ const FileViewerPage = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-5 flex items-center gap-4"
+            className="bg-white border border-gray-200 rounded-xl p-5 flex items-center gap-4 dark:bg-gray-800/50 dark:border-gray-700/50"
           >
             <div className="p-3 rounded-xl bg-gradient-to-br from-[#A53860] to-[#670D2F]">
               <Icon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-xs text-gray-400">{label}</p>
-              <p className="text-2xl font-bold text-white">{value}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
             </div>
           </motion.div>
         ))}
@@ -154,10 +154,10 @@ const FileViewerPage = () => {
             placeholder="Search files..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-gray-800 border border-gray-700 text-white placeholder:text-gray-500 rounded-xl text-sm focus:border-[#A53860] focus:ring-1 focus:ring-[#A53860] transition-all outline-none"
+            className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 rounded-xl text-sm focus:border-[#A53860] focus:ring-1 focus:ring-[#A53860] transition-all outline-none"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+            <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900 dark:hover:text-white">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -170,7 +170,7 @@ const FileViewerPage = () => {
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 selectedCategory === cat
                   ? "bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white"
-                  : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+                  : "bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
               }`}
             >
               {cat}
@@ -190,11 +190,11 @@ const FileViewerPage = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-800/50 border border-gray-700/50 rounded-xl p-16 text-center"
+          className="bg-white border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700/50 rounded-xl p-16 text-center"
         >
-          <File className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-          <h3 className="text-xl font-bold text-white mb-2">No files found</h3>
-          <p className="text-gray-400">{searchQuery ? "Try adjusting your search" : "Upload your first file to get started"}</p>
+          <File className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No files found</h3>
+          <p className="text-gray-500 dark:text-gray-400">{searchQuery ? "Try adjusting your search" : "Upload your first file to get started"}</p>
         </motion.div>
       ) : (
         <div className="space-y-3">
@@ -204,26 +204,26 @@ const FileViewerPage = () => {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: index * 0.04 }}
-              className="bg-gray-800/50 border border-gray-700/50 hover:border-[#A53860]/50 rounded-xl p-4 flex items-center justify-between group transition-all"
+              className="bg-white border border-gray-200 hover:border-[#A53860]/50 dark:bg-gray-800/50 dark:border-gray-700/50 rounded-xl p-4 flex items-center justify-between group transition-all"
             >
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="p-3 rounded-xl bg-gray-700 text-gray-300 flex-shrink-0">
+                <div className="p-3 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 flex-shrink-0">
                   {getFileIcon(file.type)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-white truncate">{file.name}</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white truncate">{file.name}</h3>
                   <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-gray-400">{formatSize(file.size)}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{formatSize(file.size)}</span>
                     <span className="text-gray-600">•</span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(file.uploadDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </span>
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-gray-700 text-gray-300">{file.category}</span>
+                    <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{file.category}</span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handlePreview(file)} className="p-2 rounded-lg hover:bg-gray-700 text-gray-300 transition-colors" title="Preview">
+                <button onClick={() => handlePreview(file)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 transition-colors" title="Preview">
                   <Eye className="w-5 h-5" />
                 </button>
                 <button
@@ -233,7 +233,7 @@ const FileViewerPage = () => {
                       onError: () => showError("Download failed"),
                     })
                   }
-                  className="p-2 rounded-lg hover:bg-gray-700 text-gray-300 transition-colors"
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 transition-colors"
                   title="Download"
                 >
                   <Download className="w-5 h-5" />
