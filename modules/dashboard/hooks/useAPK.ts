@@ -77,7 +77,19 @@ export const useLatestAPK = () =>
     queryKey: ["apk-latest"],
     queryFn: async () => {
       const releases = await apkService.getAll();
-      return releases.find((r) => r.isLatest) ?? null;
+      // 1. Try to find the one explicitly marked as latest
+      const flaggedLatest = releases.find((r) => r.isLatest);
+      if (flaggedLatest) return flaggedLatest;
+
+      // 2. Fallback to the most recent release if none is marked as latest
+      if (releases.length > 0) {
+        return [...releases].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        )[0];
+      }
+
+      return null;
     },
     staleTime: 1000 * 60 * 5, // cache for 5 minutes
   });
