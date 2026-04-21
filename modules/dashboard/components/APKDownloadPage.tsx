@@ -85,18 +85,13 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
       const url = result;
       if (!url) return showError("Download URL not available");
 
-      const response = await fetch(url, { mode: "cors" });
-      if (!response.ok) throw new Error("Failed to fetch APK");
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-
       const a = document.createElement("a");
-      a.href = blobUrl;
+      a.href = url;
       a.download = `chumme v${version}.apk`;
+      a.rel = "noopener";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
 
       showSuccess("Download started");
     } catch {
@@ -330,12 +325,19 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
           return (
             <div
               key={release.id}
-              className={`relative rounded-2xl border overflow-hidden transition-all ${release.isLatest
-                  ? "border-[#A53860]/60 bg-white/5"
+              className={`relative rounded-2xl border overflow-hidden transition-all ${
+                release.isLatest
+                  ? isDark
+                    ? "border-[#A53860]/60 bg-white/5"
+                    : "border-[#A53860]/30 bg-[#A53860]/5"
                   : release.isStable
-                    ? "border-green-500/40 bg-white/5"
-                    : "border-white/10 bg-white/5"
-                }`}
+                    ? isDark
+                      ? "border-green-500/40 bg-white/5"
+                      : "border-green-500/30 bg-green-500/5"
+                    : isDark
+                      ? "border-white/10 bg-white/5"
+                      : "border-gray-200 bg-white"
+              }`}
             >
               {/* Left accent bar */}
               <div
@@ -343,7 +345,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                     ? "bg-linear-to-b from-[#A53860] to-[#D3427B]"
                     : release.isStable
                       ? "bg-linear-to-b from-green-500 to-green-400"
-                      : "bg-white/10"
+                      : isDark
+                        ? "bg-white/10"
+                        : "bg-gray-200"
                   }`}
               />
 
@@ -352,7 +356,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                 <div className="flex flex-col gap-3 flex-1 min-w-0">
                   {/* Title row */}
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-white font-bold text-xl">
+                    <span
+                      className={`font-bold text-xl ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
                       Version {release.versionName}
                     </span>
 
@@ -376,7 +382,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex items-center gap-5 text-sm text-white/50 flex-wrap">
+                  <div
+                    className={`flex items-center gap-5 text-sm flex-wrap ${isDark ? "text-white/50" : "text-gray-500"}`}
+                  >
                     <span className="flex items-center gap-1.5">
                       <svg
                         className="w-4 h-4"
@@ -457,14 +465,16 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   {/* What's New */}
                   {changesList.length > 0 && (
                     <div className="mt-1">
-                      <p className="text-white/80 text-sm font-semibold mb-1.5">
+                      <p
+                        className={`text-sm font-semibold mb-1.5 ${isDark ? "text-white/80" : "text-gray-700"}`}
+                      >
                         What{"'"}s New:
                       </p>
                       <ul className="flex flex-col gap-1">
                         {changesList.map((change: string, i: number) => (
                           <li
                             key={i}
-                            className="flex items-start gap-2 text-sm text-white/50"
+                            className={`flex items-start gap-2 text-sm ${isDark ? "text-white/50" : "text-gray-600"}`}
                           >
                             <span className="text-[#A53860] mt-0.5">•</span>
                             {change}
@@ -503,7 +513,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                     <button
                       onClick={() => handleSetLatest(release.id)}
                       disabled={isActioning}
-                      className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-white/20 text-white/70 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                        isDark
+                          ? "border-white/20 text-white/70 hover:bg-white/10"
+                          : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 shadow-sm"
+                      }`}
                     >
                       {loadingAction[release.id] === "latest"
                         ? "Updating..."
@@ -515,7 +529,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                     <button
                       onClick={() => handleSetStable(release.id)}
                       disabled={isActioning}
-                      className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-white/20 text-white/70 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                        isDark
+                          ? "border-white/20 text-white/70 hover:bg-white/10"
+                          : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 shadow-sm"
+                      }`}
                     >
                       {loadingAction[release.id] === "stable"
                         ? "Updating..."
@@ -526,7 +544,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   <button
                     onClick={() => handleDelete(release.id)}
                     disabled={isActioning}
-                    className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-red-500/30 text-red-400 hover:bg-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                      isDark
+                        ? "border-red-500/30 text-red-400 hover:bg-red-500/10"
+                        : "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 shadow-sm"
+                    }`}
                   >
                     Delete Release
                   </button>

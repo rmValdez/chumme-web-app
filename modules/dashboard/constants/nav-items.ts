@@ -12,6 +12,7 @@ import {
   Mic2,
   Music2,
   UserRound,
+  ClipboardList,
 } from "lucide-react";
 import type React from "react";
 
@@ -32,6 +33,11 @@ export const NAV_ITEMS: NavItem[] = [
         label: "Platform Ingestion",
         href: "/dashboard/platform-ingestion",
         icon: Activity,
+      },
+      {
+        label: "Audit Logs",
+        href: "/dashboard/audit-logs",
+        icon: ClipboardList,
       },
     ],
   },
