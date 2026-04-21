@@ -10,6 +10,10 @@ import {
   ChevronDown,
   Settings,
   User,
+  FolderOpen,
+  ShieldCheck,
+  Download,
+  PlayCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -134,6 +138,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Nav */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
+            if (item.label === "Settings") return null;
             const active = activeNav === item.label;
             const isMusic = item.label === "Music";
             const isMusicActive =

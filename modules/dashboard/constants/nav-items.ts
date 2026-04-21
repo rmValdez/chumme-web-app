@@ -12,6 +12,14 @@ import {
   Mic2,
   Music2,
   UserRound,
+<<<<<<< Updated upstream
+=======
+  Settings,
+  FolderOpen,
+  ShieldCheck,
+  Download,
+  PlayCircle,
+>>>>>>> Stashed changes
 } from "lucide-react";
 import type React from "react";
 
@@ -44,6 +52,11 @@ export const NAV_ITEMS: NavItem[] = [
       { label: "Communities", href: "/dashboard/communities", icon: Users },
       { label: "Entertainment", href: "/dashboard/entertainment", icon: Star },
     ],
+  },
+  {
+    label: "Onboarding",
+    href: "/dashboard/onboarding",
+    icon: PlayCircle,
   },
   {
     label: "Music",
