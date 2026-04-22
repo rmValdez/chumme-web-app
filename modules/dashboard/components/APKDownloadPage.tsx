@@ -63,7 +63,8 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
     })
     : "—";
 
-  const cardClass = "bg-white border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700/50 rounded-xl p-6 transition-all";
+  const cardClass = `p-6 rounded-xl border transition-all ${isDark ? "bg-gray-800/80 border-gray-700/50" : "bg-white border-gray-200"
+    }`;
 
   const handleUpload = async (
     file: File,
@@ -84,18 +85,13 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
       const url = result;
       if (!url) return showError("Download URL not available");
 
-      const response = await fetch(url, { mode: "cors" });
-      if (!response.ok) throw new Error("Failed to fetch APK");
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-
       const a = document.createElement("a");
-      a.href = blobUrl;
+      a.href = url;
       a.download = `chumme v${version}.apk`;
+      a.rel = "noopener";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
 
       showSuccess("Download started");
     } catch {
@@ -144,8 +140,6 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
     }
   };
 
-
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -156,11 +150,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
       <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
           <h1
-            className="text-3xl font-bold text-gray-900 dark:text-white mb-2"
+            className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
           >
             APK Download Center
           </h1>
-          <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+          <p className={isDark ? "text-gray-400" : "text-gray-600"}>
             Download and manage Chumme Android application packages
           </p>
         </div>
@@ -179,7 +173,10 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 p-4 bg-white border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700/50 rounded-xl flex items-center gap-4"
+          className={`mb-6 p-4 rounded-xl border flex items-center gap-4 ${isDark
+              ? "bg-gray-800/80 border-gray-700/50"
+              : "bg-white border-gray-200"
+            }`}
         >
           <motion.div
             animate={{ rotate: 360 }}
@@ -187,17 +184,17 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
             className="shrink-0"
           >
             <Upload
-              className="w-5 h-5 text-[#A53860] dark:text-[#EF88AD]"
+              className={`w-5 h-5 ${isDark ? "text-[#EF88AD]" : "text-[#A53860]"}`}
             />
           </motion.div>
           <div className="flex-1 min-w-0">
             <p
-              className="text-sm font-medium text-gray-900 dark:text-white mb-1.5"
+              className={`text-sm font-medium mb-1.5 ${isDark ? "text-white" : "text-gray-900"}`}
             >
               Uploading APK…
             </p>
             <div
-              className="h-1.5 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700"
+              className={`h-1.5 rounded-full overflow-hidden ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
             >
               <motion.div
                 initial={{ x: "-100%" }}
@@ -243,12 +240,12 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
               </div>
               <div className="min-w-0">
                 <p
-                  className="text-sm text-gray-500 dark:text-gray-400 truncate"
+                  className={`text-xs sm:text-sm truncate ${isDark ? "text-gray-400" : "text-gray-600"}`}
                 >
                   {label}
                 </p>
                 <p
-                  className="text-2xl font-bold text-gray-900 dark:text-white"
+                  className={`text-xl sm:text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
                 >
                   {value}
                 </p>
@@ -263,19 +260,23 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.4 }}
-        className="bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800/30 rounded-xl p-4 flex items-start gap-3 mb-8"
+        className={`mb-8 p-4 rounded-xl border flex items-start gap-3 ${isDark
+            ? "bg-blue-900/20 border-blue-800/40"
+            : "bg-blue-50 border-blue-200"
+          }`}
       >
         <AlertCircle
-          className="w-5 h-5 shrink-0 mt-0.5 text-blue-600 dark:text-blue-400"
+          className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? "text-blue-400" : "text-blue-600"
+            }`}
         />
         <div>
           <p
-            className="text-sm font-semibold text-blue-700 dark:text-blue-400"
+            className={`text-sm font-semibold ${isDark ? "text-blue-300" : "text-blue-900"}`}
           >
             Important Installation Notice
           </p>
           <p
-            className="text-sm text-blue-600 dark:text-blue-300 mt-1"
+            className={`text-sm mt-1 ${isDark ? "text-blue-400" : "text-blue-700"}`}
           >
             Before installing, ensure you have enabled &quot;Install from
             Unknown Sources&quot; in your Android device settings. APK files are
@@ -322,7 +323,19 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
           return (
             <div
               key={release.id}
-              className="relative bg-white border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700/50 rounded-xl p-6 transition-all overflow-hidden"
+              className={`relative rounded-2xl border overflow-hidden transition-all ${
+                release.isLatest
+                  ? isDark
+                    ? "border-[#A53860]/60 bg-white/5"
+                    : "border-[#A53860]/30 bg-[#A53860]/5"
+                  : release.isStable
+                    ? isDark
+                      ? "border-green-500/40 bg-white/5"
+                      : "border-green-500/30 bg-green-500/5"
+                    : isDark
+                      ? "border-white/10 bg-white/5"
+                      : "border-gray-200 bg-white"
+              }`}
             >
               {/* Left accent bar */}
               <div
@@ -330,7 +343,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                     ? "bg-linear-to-b from-[#A53860] to-[#D3427B]"
                     : release.isStable
                       ? "bg-linear-to-b from-green-500 to-green-400"
-                      : "bg-gray-200 dark:bg-gray-700"
+                      : isDark
+                        ? "bg-white/10"
+                        : "bg-gray-200"
                   }`}
               />
 
@@ -339,7 +354,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                 <div className="flex flex-col gap-3 flex-1 min-w-0">
                   {/* Title row */}
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    <span
+                      className={`font-bold text-xl ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
                       Version {release.versionName}
                     </span>
 
@@ -363,7 +380,9 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex items-center gap-5 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
+                  <div
+                    className={`flex items-center gap-5 text-sm flex-wrap ${isDark ? "text-white/50" : "text-gray-500"}`}
+                  >
                     <span className="flex items-center gap-1.5">
                       <svg
                         className="w-4 h-4"
@@ -444,14 +463,16 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   {/* What's New */}
                   {changesList.length > 0 && (
                     <div className="mt-1">
-                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
+                      <p
+                        className={`text-sm font-semibold mb-1.5 ${isDark ? "text-white/80" : "text-gray-700"}`}
+                      >
                         What{"'"}s New:
                       </p>
                       <ul className="flex flex-col gap-1">
                         {changesList.map((change: string, i: number) => (
                           <li
                             key={i}
-                            className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400"
+                            className={`flex items-start gap-2 text-sm ${isDark ? "text-white/50" : "text-gray-600"}`}
                           >
                             <span className="text-[#A53860] mt-0.5">•</span>
                             {change}
@@ -490,7 +511,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                     <button
                       onClick={() => handleSetLatest(release.id)}
                       disabled={isActioning}
-                      className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all disabled:opacity-40"
+                      className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                        isDark
+                          ? "border-white/20 text-white/70 hover:bg-white/10"
+                          : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 shadow-sm"
+                      }`}
                     >
                       {loadingAction[release.id] === "latest"
                         ? "Updating..."
@@ -502,7 +527,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                     <button
                       onClick={() => handleSetStable(release.id)}
                       disabled={isActioning}
-                      className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-all disabled:opacity-40"
+                      className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                        isDark
+                          ? "border-white/20 text-white/70 hover:bg-white/10"
+                          : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 shadow-sm"
+                      }`}
                     >
                       {loadingAction[release.id] === "stable"
                         ? "Updating..."
@@ -513,7 +542,11 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   <button
                     onClick={() => handleDelete(release.id)}
                     disabled={isActioning}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all disabled:opacity-40"
+                    className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+                      isDark
+                        ? "border-red-500/30 text-red-400 hover:bg-red-500/10"
+                        : "border-red-300 bg-red-50 text-red-700 hover:bg-red-100 shadow-sm"
+                    }`}
                   >
                     Delete Release
                   </button>
@@ -531,7 +564,7 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
         className={cardClass}
       >
         <h3
-          className="text-xl font-bold text-gray-900 dark:text-white mb-6"
+          className={`text-lg font-bold mb-6 ${isDark ? "text-white" : "text-gray-900"}`}
         >
           Installation Guide
         </h3>
@@ -543,13 +576,13 @@ export const APKDownloadPage = ({ isDark }: APKDownloadPageProps) => {
                   {step}
                 </div>
                 <h4
-                  className="font-semibold text-gray-900 dark:text-white mb-1"
+                  className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                 >
                   {title}
                 </h4>
               </div>
               <p
-                className="text-sm text-gray-500 dark:text-gray-400"
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
               >
                 {description}
               </p>
