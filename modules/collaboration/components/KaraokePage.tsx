@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, X, RefreshCw } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useKaraokeSongs, useUploadSong, useDeleteSong, useArtists } from "@/modules/collaboration/hooks/useMusic";
 import type { KaraokeTabId } from "@/modules/collaboration/types";
@@ -24,6 +24,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
   const [songTitle, setSongTitle]     = useState("");
   const [selectedArtistId, setSelectedArtistId] = useState<string>("");
   const [audioFile, setAudioFile]     = useState<File | null>(null);
+  const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [lyricsFile, setLyricsFile]   = useState<File | null>(null);
   const [videoFile, setVideoFile]     = useState<File | null>(null);
   const [artistError, setArtistError] = useState(false);
@@ -41,10 +42,24 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
     isDark ? "text-gray-300" : "text-gray-700"
   }`;
 
+  const extractDuration = (file: File): Promise<number | null> =>
+    new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const audio = document.createElement("audio");
+      audio.preload = "metadata";
+      audio.onloadedmetadata = () => {
+        URL.revokeObjectURL(url);
+        resolve(isFinite(audio.duration) ? Math.round(audio.duration) : null);
+      };
+      audio.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      audio.src = url;
+    });
+
   const resetForm = () => {
     setSongTitle("");
     setSelectedArtistId("");
     setAudioFile(null);
+    setAudioDuration(null);
     setLyricsFile(null);
     setVideoFile(null);
     setArtistError(false);
@@ -62,9 +77,12 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
     try {
       await uploadSong.mutateAsync({
         file: audioFile,
+        lyricsFile,
+        videoFile,
         meta: {
           title: songTitle.trim(),
           musicArtistId: selectedArtistId,
+          duration: audioDuration ?? undefined,
         },
       });
       resetForm();
@@ -90,68 +108,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
   };
 
   return (
-    <div>
-      {/* Header */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
-              Karaoke Management
-            </h1>
-            <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-              Manage karaoke songs, lyrics, and fan recordings
-            </p>
-          </div>
-          <button
-            onClick={() => refetch()}
-            className={`p-2.5 rounded-xl border transition-colors ${
-              isDark
-                ? "border-gray-700 hover:bg-gray-800 text-gray-400"
-                : "border-gray-200 hover:bg-gray-100 text-gray-600"
-            }`}
-            title="Refresh"
-          >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[
-          { label: "Total Karaoke Songs", value: data?.meta?.total ?? songs.length },
-          { label: "Active Tracks",       value: songs.filter(s => !s.status).length || songs.length },
-          { label: "Most Sung Song",      value: songs[0]?.title ?? "—" },
-          { label: "Total Recordings",    value: "—" },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 * i }}
-            className={`p-6 rounded-xl border ${
-              isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-            }`}
-          >
-            <p className={`text-sm mb-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-              {stat.label}
-            </p>
-            <p className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
-              {isLoading ? (
-                <span className={`inline-block h-7 w-16 rounded animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`} />
-              ) : (
-                stat.value
-              )}
-            </p>
-          </motion.div>
-        ))}
-      </div>
-
+    <div className="max-w-6xl mx-auto">
       {/* Tabs */}
       <div className={`border-b mb-6 ${isDark ? "border-gray-700" : "border-gray-200"}`}>
         <div className="flex gap-6">
@@ -175,115 +132,121 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
 
       {/* Songs Tab */}
       {activeTab === "songs" && (
-        <>
-          <div className="mb-6">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 flex items-center gap-2 transition-all"
-            >
-              <Plus className="w-4 h-4" /> Add Karaoke Song
-            </button>
-          </div>
-
-          {isError && (
-            <div className={`mb-4 p-4 rounded-xl border ${
-              isDark ? "bg-red-900/20 border-red-800/40 text-red-400" : "bg-red-50 border-red-200 text-red-700"
-            }`}>
-              Failed to load karaoke songs.{" "}
-              <button onClick={() => refetch()} className="underline">
-                Try again
-              </button>
-            </div>
-          )}
-
-          {isLoading ? (
-            <div className={`rounded-xl border p-16 text-center ${
-              isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-            }`}>
-              <div className="w-10 h-10 border-4 border-[#A53860]/20 border-t-[#A53860] rounded-full animate-spin mx-auto mb-4" />
-              <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-                Loading karaoke songs...
-              </p>
-            </div>
-          ) : songs.length === 0 ? (
-            <div className={`rounded-xl border p-16 text-center ${
-              isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-            }`}>
-              <div className="text-5xl mb-4">🎤</div>
-              <p className={`text-lg font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                No karaoke songs yet
-              </p>
-              <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-                Click &quot;Add Karaoke Song&quot; to add your first song
-              </p>
-            </div>
-          ) : (
-            <div className={`rounded-xl border overflow-hidden ${
-              isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-            }`}>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}>
-                    <tr>
-                      {["Title", "Artist", "Duration", "Type", "Actions"].map((h) => (
-                        <th
-                          key={h}
-                          className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${
-                            isDark ? "text-gray-400" : "text-gray-500"
-                          }`}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-200"}`}>
-                    {songs.map((song) => (
-                      <tr
-                        key={song.id}
-                        className={`group transition-colors ${isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"}`}
-                      >
-                        <td className={`px-6 py-4 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>
-                          {song.title}
-                        </td>
-                        <td className={`px-6 py-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {song.musicArtist?.name ?? "—"}
-                        </td>
-                        <td className={`px-6 py-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {formatDuration(song.duration)}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-[#A53860]/10 text-[#A53860]">
-                            Karaoke
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <button
-                            onClick={() => handleDelete(song.id)}
-                            disabled={deleteSong.isPending}
-                            className={`p-2 rounded-lg transition-all ${
-                              isDark ? "hover:bg-red-500/10" : "hover:bg-red-50"
-                            } disabled:opacity-50`}
-                          >
-                            <Trash2 className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        <div className="space-y-6">
+            {/* Header & Stats Container */}
+            <div className="flex flex-col lg:flex-row lg:items-end gap-6">
+              {/* Action Button */}
+              <div className="shrink-0">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white text-sm font-medium hover:opacity-90 flex items-center gap-2 transition-all shadow-md"
+                >
+                  <Plus className="w-4 h-4" /> Add Karaoke Song
+                </button>
               </div>
-              
-              <Pagination
-                currentPage={page}
-                totalPages={data?.meta?.totalPages ?? 1}
-                onPageChange={setPage}
-                isDark={isDark}
-              />
+
+              {/* Stats Grid - Now smaller and aligned */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-1">
+                {[
+                  { label: "Total Songs", value: data?.meta?.total ?? songs.length },
+                  { label: "Active Tracks", value: songs.filter(s => !s.status).length || songs.length },
+                  { label: "Most Sung", value: songs[0]?.title ?? "—" },
+                  { label: "Recordings", value: "—" },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 0.05 * i }}
+                    className={`p-3.5 rounded-xl border ${
+                      isDark ? "bg-gray-800/50 border-gray-700" : "bg-white border-gray-200"
+                    } shadow-sm`}
+                  >
+                    <p className={`text-[10px] uppercase tracking-wider font-semibold mb-1 truncate ${
+                      isDark ? "text-gray-400" : "text-gray-500"
+                    }`}>
+                      {stat.label}
+                    </p>
+                    <p className={`text-lg font-bold truncate ${isDark ? "text-white" : "text-gray-900"}`}>
+                      {isLoading ? (
+                        <span className={`inline-block h-5 w-12 rounded animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`} />
+                      ) : (
+                        stat.value
+                      )}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          )}
-        </>
-      )}
+
+            {/* Error State */}
+            {isError && (
+              <div className={`p-4 rounded-xl border ${
+                isDark ? "bg-red-900/20 border-red-800/40 text-red-400" : "bg-red-50 border-red-200 text-red-700"
+              }`}>
+                Failed to load karaoke songs.{" "}
+                <button onClick={() => refetch()} className="underline font-medium">Try again</button>
+              </div>
+            )}
+
+            {/* Content Area (Loading / Empty / Table) */}
+            {isLoading ? (
+              <div className={`rounded-xl border p-16 text-center ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+                <div className="w-10 h-10 border-4 border-[#A53860]/20 border-t-[#A53860] rounded-full animate-spin mx-auto mb-4" />
+                <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading karaoke songs...</p>
+              </div>
+            ) : songs.length === 0 ? (
+              <div className={`rounded-xl border p-16 text-center ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+                <div className="text-5xl mb-4">🎤</div>
+                <p className={`text-lg font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>No karaoke songs yet</p>
+                <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>Click &quot;Add Karaoke Song&quot; to add your first song</p>
+              </div>
+            ) : (
+              <div className={`rounded-xl border overflow-hidden shadow-sm ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}>
+                      <tr>
+                        {["Title", "Artist", "Duration", "Type", "Actions"].map((h) => (
+                          <th key={h} className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-200"}`}>
+                      {songs.map((song) => (
+                        <tr key={song.id} className={`group transition-colors text-sm ${isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"}`}>
+                          <td className={`px-4 py-2.5 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>{song.title}</td>
+                          <td className={`px-4 py-2.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>{song.musicArtist?.name ?? "—"}</td>
+                          <td className={`px-4 py-2.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>{formatDuration(song.duration)}</td>
+                          <td className="px-4 py-2.5">
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-[#A53860]/10 text-[#A53860]">Karaoke</span>
+                          </td>
+                          <td className="px-4 py-2.5">
+                            <button
+                              onClick={() => handleDelete(song.id)}
+                              disabled={deleteSong.isPending}
+                              className={`p-2 rounded-lg transition-all ${isDark ? "hover:bg-red-500/10" : "hover:bg-red-50"} disabled:opacity-50`}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <Pagination
+                  currentPage={page}
+                  totalPages={data?.meta?.totalPages ?? 1}
+                  onPageChange={setPage}
+                  isDark={isDark}
+                />
+              </div>
+            )}
+          </div>
+        )}
 
       {/* Recordings Tab */}
       {activeTab === "recordings" && (
@@ -391,17 +354,24 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
                         type="file"
                         accept=".mp3,audio/mpeg"
                         className="sr-only"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0] ?? null;
                           if (file && !file.name.toLowerCase().endsWith(".mp3")) {
                             e.target.value = "";
                             setAudioFile(null);
+                            setAudioDuration(null);
                             setMp3Error(true);
                             setTimeout(() => setMp3Error(false), 4000);
                             return;
                           }
                           setMp3Error(false);
                           setAudioFile(file);
+                          if (file) {
+                            const dur = await extractDuration(file);
+                            setAudioDuration(dur);
+                          } else {
+                            setAudioDuration(null);
+                          }
                         }}
                       />
                       {audioFile ? (

@@ -93,7 +93,7 @@ export const LoginForm = () => {
                     isDarkMode ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  Sign In
+                  Sign In as a Creator
                 </h2>
                 <p
                   className={`text-sm ${
