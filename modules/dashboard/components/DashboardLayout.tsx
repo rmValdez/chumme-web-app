@@ -401,7 +401,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.45, delay: 0.15 }}
-          className={`sticky top-0 z-20 border-b px-4 lg:px-8 py-4 flex items-center gap-4 ${isDark
+          className={`sticky top-0 z-20 border-b px-4 lg:hidden py-4 flex items-center gap-4 ${isDark
               ? "bg-gray-900/95 border-gray-700 backdrop-blur-sm"
               : "bg-white/95 border-gray-200 backdrop-blur-sm"
             }`}

@@ -30,12 +30,15 @@ export const useUploadSong = (isKaraoke: boolean) => {
       file: File;
       lyricsFile?: File | null;
       videoFile?: File | null;
-      meta: { title: string; musicArtistId?: string };
+      meta: { title: string; musicArtistId?: string; album?: string; genre?: string; duration?: number };
     }) =>
       musicService.uploadSong(file, {
         title: meta.title,
         isKaraoke,
         musicArtistId: meta.musicArtistId,
+        album: meta.album,
+        genre: meta.genre,
+        duration: meta.duration,
         lyricsFile,
         videoFile,
       }),
@@ -65,3 +68,34 @@ export const useArtists = () =>
     queryFn: musicService.getArtists,
     staleTime: 5 * 60 * 1000,
   });
+
+export const useCreateArtist = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: musicService.createArtist,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["artists"] });
+    },
+  });
+};
+
+export const useUpdateArtist = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof musicService.updateArtist>[1] }) =>
+      musicService.updateArtist(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["artists"] });
+    },
+  });
+};
+
+export const useDeleteArtist = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: musicService.deleteArtist,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["artists"] });
+    },
+  });
+};

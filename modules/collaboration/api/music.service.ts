@@ -1,4 +1,4 @@
-import { api } from "@/modules/shared/api/api-client";
+import { api, getApiBaseUrl } from "@/modules/shared/api/api-client";
 
 export interface MusicTrack {
   id: string;
@@ -61,9 +61,20 @@ export const musicService = {
 
   getArtists: async (): Promise<ArtistOption[]> => {
     const res = await api.get<ArtistsResponse>("/api/v1/artists");
-    if (!res.ok) return [];
-    return res.data?.data ?? [];
+    if (!res.ok) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn("[musicService.getArtists] Request failed:", res.status, res.data);
+      }
+      return [];
+    }
+    if (process.env.NODE_ENV === "development") {
+      console.log("[musicService.getArtists] Raw response:", res.data);
+    }
+    const rawData = res.data as any;
+    if (Array.isArray(rawData)) return rawData;
+    return rawData?.data ?? [];
   },
+
 
   uploadSong: async (
     file: File,
@@ -71,12 +82,14 @@ export const musicService = {
       title: string;
       isKaraoke: boolean;
       musicArtistId?: string;
+      album?: string;
+      genre?: string;
+      duration?: number;
       lyricsFile?: File | null;
       videoFile?: File | null;
     },
   ): Promise<MusicTrack> => {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
+    const baseUrl = getApiBaseUrl();
     const token =
       typeof window !== "undefined"
         ? localStorage.getItem("access_token")
@@ -87,10 +100,12 @@ export const musicService = {
     formData.append("title", meta.title);
     formData.append("isKaraoke", String(meta.isKaraoke));
     formData.append("release_date", new Date().toISOString());
-    formData.append("fileType", meta.isKaraoke ? "KARAOKE" : "MUSIC");
 
     if (meta.musicArtistId) {
       formData.append("musicArtistId", meta.musicArtistId);
+    }
+    if (meta.duration !== undefined) {
+      formData.append("duration", String(meta.duration));
     }
 
     if (meta.lyricsFile) {
@@ -108,7 +123,16 @@ export const musicService = {
       body: formData,
     });
 
-    const json = await response.json();
+    let json;
+    try {
+      json = await response.json();
+    } catch (e) {
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+      throw new Error("Failed to parse server response");
+    }
+
     if (!response.ok)
       throw new Error(json?.message || "Failed to upload song");
     return json?.data ?? json;
@@ -120,5 +144,43 @@ export const musicService = {
       throw new Error(
         (res.data as Record<string, string> | undefined)?.message || "Failed to delete song",
       );
+  },
+
+  createArtist: async (data: {
+    name: string;
+    platform: string;
+    bio?: string;
+    imageUrl?: string;
+    genre?: string;
+  }): Promise<ArtistOption> => {
+    const res = await api.post<{ data: ArtistOption }>("/api/v1/artists", data);
+    if (!res.ok) {
+      throw new Error((res.data as any)?.message || "Failed to create artist");
+    }
+    return res.data!.data ?? res.data!;
+  },
+
+  updateArtist: async (
+    id: string,
+    data: {
+      name?: string;
+      platform?: string;
+      bio?: string;
+      imageUrl?: string;
+      genre?: string;
+    }
+  ): Promise<ArtistOption> => {
+    const res = await api.put<{ data: ArtistOption }>(`/api/v1/artists/${id}`, data);
+    if (!res.ok) {
+      throw new Error((res.data as any)?.message || "Failed to update artist");
+    }
+    return res.data!.data ?? res.data!;
+  },
+
+  deleteArtist: async (id: string): Promise<void> => {
+    const res = await api.delete(`/api/v1/artists/${id}`);
+    if (!res.ok) {
+      throw new Error((res.data as any)?.message || "Failed to delete artist");
+    }
   },
 };
