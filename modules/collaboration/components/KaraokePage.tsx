@@ -199,7 +199,7 @@ export const KaraokePage = ({ isDark: isDarkProp }: KaraokePageProps) => {
               <div className={`rounded-xl border p-16 text-center ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
                 <div className="text-5xl mb-4">🎤</div>
                 <p className={`text-lg font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>No karaoke songs yet</p>
-                <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>Click "Add Karaoke Song" to add your first song</p>
+                <p className={`text-sm ${isDark ? "text-gray-500" : "text-gray-400"}`}>Click &quot;Add Karaoke Song&quot; to add your first song</p>
               </div>
             ) : (
               <div className={`rounded-xl border overflow-hidden shadow-sm ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>

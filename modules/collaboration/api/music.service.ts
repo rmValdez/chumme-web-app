@@ -67,12 +67,9 @@ export const musicService = {
       }
       return [];
     }
-    if (process.env.NODE_ENV === "development") {
-      console.log("[musicService.getArtists] Raw response:", res.data);
-    }
-    const rawData = res.data as any;
+    const rawData = res.data as Record<string, unknown> | ArtistOption[] | undefined;
     if (Array.isArray(rawData)) return rawData;
-    return rawData?.data ?? [];
+    return (rawData?.data as ArtistOption[]) ?? [];
   },
 
 
@@ -126,7 +123,7 @@ export const musicService = {
     let json;
     try {
       json = await response.json();
-    } catch (e) {
+    } catch {
       if (!response.ok) {
         throw new Error(`Upload failed with status ${response.status}`);
       }
@@ -155,7 +152,7 @@ export const musicService = {
   }): Promise<ArtistOption> => {
     const res = await api.post<{ data: ArtistOption }>("/api/v1/artists", data);
     if (!res.ok) {
-      throw new Error((res.data as any)?.message || "Failed to create artist");
+      throw new Error(((res.data as Record<string, unknown>)?.message as string) || "Failed to create artist");
     }
     return res.data!.data ?? res.data!;
   },
@@ -172,7 +169,7 @@ export const musicService = {
   ): Promise<ArtistOption> => {
     const res = await api.put<{ data: ArtistOption }>(`/api/v1/artists/${id}`, data);
     if (!res.ok) {
-      throw new Error((res.data as any)?.message || "Failed to update artist");
+      throw new Error(((res.data as Record<string, unknown>)?.message as string) || "Failed to update artist");
     }
     return res.data!.data ?? res.data!;
   },
@@ -180,7 +177,7 @@ export const musicService = {
   deleteArtist: async (id: string): Promise<void> => {
     const res = await api.delete(`/api/v1/artists/${id}`);
     if (!res.ok) {
-      throw new Error((res.data as any)?.message || "Failed to delete artist");
+      throw new Error(((res.data as Record<string, unknown>)?.message as string) || "Failed to delete artist");
     }
   },
 };

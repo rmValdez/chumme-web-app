@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, X, RefreshCw } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSongs, useUploadSong, useDeleteSong, useArtists } from "@/modules/collaboration/hooks/useMusic";
 import { Pagination } from "@/modules/shared/components/Pagination";

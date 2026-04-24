@@ -22,7 +22,7 @@ const ArtistPage = () => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  const { data: backendArtists = [], isLoading } = useArtists();
+  const { data: fetchedArtists = [], isLoading } = useArtists();
   const createArtist = useCreateArtist();
   const updateArtist = useUpdateArtist();
   const deleteArtist = useDeleteArtist();
@@ -35,12 +35,12 @@ const ArtistPage = () => {
   const [page, setPage] = useState(1);
   const limit = 6;
 
-  const artists: Artist[] = backendArtists.map(a => ({
-    id: a.id,
-    name: a.name || "Unknown Artist",
-    genre: (a as any).genre || "", 
-    description: (a as any).bio || "",
-    imageUrl: a.imageUrl || undefined
+  const artists: Artist[] = fetchedArtists.map(fetchedArtist => ({
+    id: fetchedArtist.id,
+    name: fetchedArtist.name || "Unknown Artist",
+    genre: ((fetchedArtist as unknown as Record<string, unknown>).genre as string) || "", 
+    description: ((fetchedArtist as unknown as Record<string, unknown>).bio as string) || "",
+    imageUrl: fetchedArtist.imageUrl || undefined
   }));
 
   const handleOpenModal = (artist?: Artist) => {
@@ -86,9 +86,9 @@ const ArtistPage = () => {
   };
 
   const filteredArtists = artists.filter(
-    (a) =>
-      a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.genre.toLowerCase().includes(searchQuery.toLowerCase())
+    (artist) =>
+      artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      artist.genre.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredArtists.length / limit);
