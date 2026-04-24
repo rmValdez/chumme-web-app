@@ -4,10 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, X, Upload, Edit, Trash2, Music } from "lucide-react";
 import Image from "next/image";
-import { useArtists } from "@/modules/collaboration/hooks/useMusic";
+import { useArtists, useCreateArtist, useUpdateArtist, useDeleteArtist } from "@/modules/collaboration/hooks/useMusic";
 import { Pagination } from "@/modules/shared/components/Pagination";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
 
 interface Artist {
   id: string;
@@ -23,8 +22,11 @@ const ArtistPage = () => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  const { data: backendArtists = [], isLoading } = useArtists();
-  const [artists, setArtists] = useState<Artist[]>([]);
+  const { data: fetchedArtists = [], isLoading } = useArtists();
+  const createArtist = useCreateArtist();
+  const updateArtist = useUpdateArtist();
+  const deleteArtist = useDeleteArtist();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
@@ -33,19 +35,13 @@ const ArtistPage = () => {
   const [page, setPage] = useState(1);
   const limit = 6;
 
-  useEffect(() => {
-    if (Array.isArray(backendArtists) && backendArtists.length > 0) {
-      // Map backend data to local Artist interface
-      const mapped = backendArtists.map(a => ({
-        id: a.id || Math.random().toString(),
-        name: a.name || "Unknown Artist",
-        genre: "", 
-        description: "",
-        imageUrl: a.imageUrl || undefined
-      }));
-      setArtists(mapped);
-    }
-  }, [backendArtists]);
+  const artists: Artist[] = fetchedArtists.map(fetchedArtist => ({
+    id: fetchedArtist.id,
+    name: fetchedArtist.name || "Unknown Artist",
+    genre: ((fetchedArtist as unknown as Record<string, unknown>).genre as string) || "", 
+    description: ((fetchedArtist as unknown as Record<string, unknown>).bio as string) || "",
+    imageUrl: fetchedArtist.imageUrl || undefined
+  }));
 
   const handleOpenModal = (artist?: Artist) => {
     if (artist) {
@@ -66,22 +62,33 @@ const ArtistPage = () => {
 
   const handleSaveArtist = () => {
     if (!formData.name.trim()) return;
+    
+    const payload = {
+      name: formData.name,
+      platform: "YOUTUBE", // Required by backend
+      bio: formData.description,
+      imageUrl: formData.imageUrl,
+      genre: formData.genre,
+    };
+
     if (editingArtist) {
-      setArtists((prev) => prev.map((a) => (a.id === editingArtist.id ? { ...a, ...formData } : a)));
+      updateArtist.mutate(
+        { id: editingArtist.id, data: payload },
+        { onSuccess: handleCloseModal }
+      );
     } else {
-      setArtists((prev) => [...prev, { id: Date.now().toString(), ...formData }]);
+      createArtist.mutate(payload, { onSuccess: handleCloseModal });
     }
-    handleCloseModal();
   };
 
   const handleDeleteArtist = (id: string) => {
-    setArtists((prev) => prev.filter((a) => a.id !== id));
+    deleteArtist.mutate(id);
   };
 
   const filteredArtists = artists.filter(
-    (a) =>
-      a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.genre.toLowerCase().includes(searchQuery.toLowerCase())
+    (artist) =>
+      artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      artist.genre.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredArtists.length / limit);

@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bell,
-  Search,
   Sun,
   Moon,
   LogOut,
@@ -170,9 +169,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               Chumme
             </span>
           </div>
-          
+
           {/* Close Sidebar (Mobile Only) */}
-          <button 
+          <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
@@ -203,10 +202,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       }
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isParentActive
-                        ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-md font-semibold"
-                        : isDark
-                          ? "text-gray-300 hover:bg-gray-800"
-                          : "text-gray-600 hover:bg-gray-100"
+                      ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-md font-semibold"
+                      : isDark
+                        ? "text-gray-300 hover:bg-gray-800"
+                        : "text-gray-600 hover:bg-gray-100"
                       }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
@@ -239,10 +238,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                                 router.push(child.href);
                               }}
                               className={`w-full text-left px-4 py-2.5 rounded-lg text-xs transition-all ${activeNav === child.label
-                                  ? "text-[#A53860] bg-[#A53860]/10 font-bold"
-                                  : isDark
-                                    ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
-                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                ? "text-[#A53860] bg-[#A53860]/10 font-bold"
+                                : isDark
+                                  ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                                 }`}
                             >
                               <div className="flex items-center gap-2">
@@ -286,10 +285,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   href={item.href}
                   onClick={() => setActiveNav(item.label)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${activeNav === item.label
-                      ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-md font-semibold"
-                      : isDark
-                        ? "text-gray-300 hover:bg-gray-800"
-                        : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-linear-to-r from-[#A53860] to-[#670D2F] text-white shadow-md font-semibold"
+                    : isDark
+                      ? "text-gray-300 hover:bg-gray-800"
+                      : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   <item.icon className="w-5 h-5 shrink-0" />
@@ -310,8 +309,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <button
               onClick={() => setTheme("light")}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all ${!isDark
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-400 hover:text-gray-200"
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-400 hover:text-gray-200"
                 }`}
             >
               <Sun className="w-4 h-4" /> Light
@@ -319,8 +318,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <button
               onClick={() => setTheme("dark")}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-all ${isDark
-                  ? "bg-gray-700 text-white shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                ? "bg-gray-700 text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
                 }`}
             >
               <Moon className="w-4 h-4" /> Dark
@@ -354,8 +353,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   exit={{ opacity: 0, scale: 0.95, y: 8 }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
                   className={`absolute bottom-full left-0 mb-2 w-64 rounded-2xl shadow-2xl z-50 overflow-hidden border ${isDark
-                      ? "bg-gray-900 border-gray-700/50"
-                      : "bg-white border-gray-200"
+                    ? "bg-gray-900 border-gray-700/50"
+                    : "bg-white border-gray-200"
                     }`}
                 >
                   {/* Profile Info (In Dropdown too, for consistency) */}
@@ -372,7 +371,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                           {user?.email || "user@chumme.com"}
                         </p>
                         <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#A53860]/20 text-[#EF88AD]">
-                          Admin
+                          {(user as any)?.role === "ADMIN" ? "Admin" : "Creator"}
                         </span>
                       </div>
                     </div>
@@ -389,8 +388,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                         key={label}
                         onClick={() => { action(); setProfileMenuOpen(false); }}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isDark
-                            ? "text-gray-300 hover:text-white hover:bg-gray-800"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                          ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                           }`}
                       >
                         <Icon className={`w-4 h-4 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
@@ -423,17 +422,17 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.45, delay: 0.15 }}
-          className={`sticky top-0 z-20 border-b px-4 lg:px-8 py-4 flex items-center gap-4 ${isDark
-              ? "bg-gray-900/95 border-gray-700 backdrop-blur-sm"
-              : "bg-white/95 border-gray-200 backdrop-blur-sm"
+          className={`sticky top-0 z-20 border-b px-4 lg:hidden py-4 flex items-center gap-4 ${isDark
+            ? "bg-gray-900/95 border-gray-700 backdrop-blur-sm"
+            : "bg-white/95 border-gray-200 backdrop-blur-sm"
             }`}
         >
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setSidebarOpen(true)}
             className={`lg:hidden p-2 rounded-xl border transition-colors ${isDark
-                ? "bg-gray-800 border-gray-700 hover:bg-gray-700"
-                : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+              ? "bg-gray-800 border-gray-700 hover:bg-gray-700"
+              : "bg-gray-50 border-gray-200 hover:bg-gray-100"
               }`}
           >
             <Menu className={`w-5 h-5 ${isDark ? "text-gray-300" : "text-gray-600"}`} />
