@@ -12,6 +12,7 @@ import {
   User,
   Menu,
   X,
+  Radio,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -250,6 +251,27 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                               </div>
                             </button>
                           ))}
+                          {/* Ensure Live Video API is present if not already in children */}
+                          {item.label === "Categories" && !item.children.some(c => c.label === "Live Video API") && (
+                            <button
+                              onClick={() => {
+                                setActiveNav("Live Video API");
+                                router.push("/dashboard/categories/live-video");
+                              }}
+                              className={`w-full text-left px-4 py-2.5 rounded-lg text-xs transition-all ${activeNav === "Live Video API"
+                                  ? "text-[#A53860] bg-[#A53860]/10 font-bold"
+                                  : isDark
+                                    ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Radio className="w-3.5 h-3.5 shrink-0" />
+                                Live Video API
+                              </div>
+                            </button>
+                          )}
+
                         </div>
                       </motion.div>
                     )}
