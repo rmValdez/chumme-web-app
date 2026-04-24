@@ -19,7 +19,7 @@ export const useKaraokeSongs = (params?: { page?: number; limit?: number; search
   });
 
 export const useUploadSong = (isKaraoke: boolean) => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       file,
@@ -43,7 +43,7 @@ export const useUploadSong = (isKaraoke: boolean) => {
         videoFile,
       }),
     onSuccess: () => {
-      qc.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: isKaraoke ? KARAOKE_KEY : SONGS_KEY,
       });
     },
@@ -51,11 +51,11 @@ export const useUploadSong = (isKaraoke: boolean) => {
 };
 
 export const useDeleteSong = (isKaraoke: boolean) => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => musicService.deleteSong(id),
     onSuccess: () => {
-      qc.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: isKaraoke ? KARAOKE_KEY : SONGS_KEY,
       });
     },
@@ -70,32 +70,32 @@ export const useArtists = () =>
   });
 
 export const useCreateArtist = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: musicService.createArtist,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["artists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
     },
   });
 };
 
 export const useUpdateArtist = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Parameters<typeof musicService.updateArtist>[1] }) =>
       musicService.updateArtist(id, data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["artists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
     },
   });
 };
 
 export const useDeleteArtist = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: musicService.deleteArtist,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["artists"] });
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
     },
   });
 };
