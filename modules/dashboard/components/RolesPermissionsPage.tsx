@@ -13,10 +13,30 @@ import { useState } from "react";
 
 export const RolesPermissionsPage = () => {
   const [roles, setRoles] = useState([
-    { id: "1", name: "Super Admin", description: "Full system access, manage all settings", tag: "SUPER ADMIN", tagColor: "#EF4444", members: 2 },
-    { id: "2", name: "Community Mgr", description: "Manage members, content, and reports", tag: "COMMUNITY MGR", tagColor: "#A53860", members: 12 },
-    { id: "3", name: "Support Team", description: "View tickets, user profiles, few edits", tag: "SUPPORT TEAM", tagColor: "#3B82F6", members: 8 },
-    { id: "4", name: "Moderator", description: "Basic content moderation and flagging", tag: "MODERATOR", tagColor: "#10B981", members: 24 },
+    {
+      id: "1",
+      name: "Admin",
+      description: "Full system access, manage all settings and users",
+      tag: "ADMIN",
+      tagColor: "#A53860",
+      members: 2,
+    },
+    {
+      id: "2",
+      name: "Creator",
+      description: "Create and manage content, music, and communities",
+      tag: "CREATOR",
+      tagColor: "#3B82F6",
+      members: 18,
+    },
+    {
+      id: "3",
+      name: "User",
+      description: "Standard access to platform features and content",
+      tag: "USER",
+      tagColor: "#10B981",
+      members: 1240,
+    },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,15 +72,9 @@ export const RolesPermissionsPage = () => {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-white dark:text-white text-gray-900">Roles</h1>
-          <p className="text-sm mt-1 text-gray-400 dark:text-gray-400 text-gray-500">Manage your administrative team roles</p>
+          <h1 className="text-3xl font-bold text-white dark:text-white text-gray-900">User Management</h1>
+          <p className="text-sm mt-1 text-gray-400 dark:text-gray-400 text-gray-500">Manage platform user roles and access levels</p>
         </div>
-        <button
-          onClick={() => openModal()}
-          className="flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-[#A53860] to-[#670D2F] text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md"
-        >
-          <Plus className="w-4 h-4" /> Add New Role
-        </button>
       </motion.div>
 
       <div className="space-y-6">
