@@ -11,6 +11,7 @@ import {
   User,
   Menu,
   X,
+  Radio,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -154,20 +155,17 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div
           className={`p-6 border-b flex items-center justify-between gap-3 ${isDark ? "border-gray-700" : "border-gray-200"}`}
         >
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Chumme"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
-            <span
-              className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-            >
-              Chumme
-            </span>
-          </div>
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+              <img
+                src="/logo.png"
+                alt="Chumme"
+                className="w-8 h-8 object-contain"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+              <span className="font-bold text-xl tracking-wide text-white">CHUMME</span>
+            </div>
+          </Link>
 
           {/* Close Sidebar (Mobile Only) */}
           <button
@@ -249,6 +247,27 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                               </div>
                             </button>
                           ))}
+                          {/* Ensure Live Video API is present if not already in children */}
+                          {item.label === "Categories" && !item.children.some(c => c.label === "Live Video API") && (
+                            <button
+                              onClick={() => {
+                                setActiveNav("Live Video API");
+                                router.push("/dashboard/categories/live-video");
+                              }}
+                              className={`w-full text-left px-4 py-2.5 rounded-lg text-xs transition-all ${activeNav === "Live Video API"
+                                ? "text-[#A53860] bg-[#A53860]/10 font-bold"
+                                : isDark
+                                  ? "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Radio className="w-3.5 h-3.5 shrink-0" />
+                                Live Video API
+                              </div>
+                            </button>
+                          )}
+
                         </div>
                       </motion.div>
                     )}
@@ -349,7 +368,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                           {user?.email || "user@chumme.com"}
                         </p>
                         <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#A53860]/20 text-[#EF88AD]">
-                          {(user as { role?: string })?.role === "ADMIN" ? "Admin" : "Creator"}
+                          {(user as any)?.role === "ADMIN" ? "Admin" : "Creator"}
                         </span>
                       </div>
                     </div>

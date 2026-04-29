@@ -79,7 +79,7 @@ export const NAV_ITEMS: NavItem[] = [
         icon: PlayCircle,
       },
       {
-        label: "Roles",
+        label: "User Management",
         href: "/dashboard/settings/roles",
         icon: ShieldCheck,
       },
