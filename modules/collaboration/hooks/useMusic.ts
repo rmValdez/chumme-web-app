@@ -19,7 +19,7 @@ export const useKaraokeSongs = (params?: { page?: number; limit?: number; search
   });
 
 export const useUploadSong = (isKaraoke: boolean) => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       file,
@@ -30,17 +30,20 @@ export const useUploadSong = (isKaraoke: boolean) => {
       file: File;
       lyricsFile?: File | null;
       videoFile?: File | null;
-      meta: { title: string; musicArtistId?: string };
+      meta: { title: string; musicArtistId?: string; album?: string; genre?: string; duration?: number };
     }) =>
       musicService.uploadSong(file, {
         title: meta.title,
         isKaraoke,
         musicArtistId: meta.musicArtistId,
+        album: meta.album,
+        genre: meta.genre,
+        duration: meta.duration,
         lyricsFile,
         videoFile,
       }),
     onSuccess: () => {
-      qc.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: isKaraoke ? KARAOKE_KEY : SONGS_KEY,
       });
     },
@@ -48,11 +51,11 @@ export const useUploadSong = (isKaraoke: boolean) => {
 };
 
 export const useDeleteSong = (isKaraoke: boolean) => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => musicService.deleteSong(id),
     onSuccess: () => {
-      qc.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: isKaraoke ? KARAOKE_KEY : SONGS_KEY,
       });
     },
@@ -65,3 +68,34 @@ export const useArtists = () =>
     queryFn: musicService.getArtists,
     staleTime: 5 * 60 * 1000,
   });
+
+export const useCreateArtist = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: musicService.createArtist,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+    },
+  });
+};
+
+export const useUpdateArtist = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof musicService.updateArtist>[1] }) =>
+      musicService.updateArtist(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+    },
+  });
+};
+
+export const useDeleteArtist = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: musicService.deleteArtist,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+    },
+  });
+};
