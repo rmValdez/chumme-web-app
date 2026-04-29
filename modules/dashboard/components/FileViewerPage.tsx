@@ -168,6 +168,20 @@ const FileViewerPage = () => {
     try { return JSON.stringify(JSON.parse(text), null, 2); } catch { return text; }
   };
 
+  const handleForceDownload = (url: string, filename: string) => {
+    showSuccess(`Starting download for ${filename}...`);
+    
+    // Use our internal Next.js proxy to bypass S3 CORS and force a download prompt
+    const proxyUrl = `/api/download?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`;
+    
+    const link = document.createElement("a");
+    link.href = proxyUrl;
+    link.download = filename; // This acts as a fallback, but the server header forces it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Safe Render Guard
   if (!mounted) return (
     <div className="flex items-center justify-center py-20">
@@ -297,7 +311,7 @@ const FileViewerPage = () => {
               <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                 <button onClick={() => handlePreview(file)} className={`p-2 rounded-lg ${isDark ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-600"}`} title="Preview"><Eye className="w-5 h-5" /></button>
                 <button 
-                  onClick={() => downloadMutation.mutate(file.id, { onSuccess: (url) => window.open(url, "_blank"), onError: () => showError("Download failed") })} 
+                  onClick={() => { if (file.url) handleForceDownload(file.url, file.name); else showError("No URL available for this file"); }} 
                   className={`p-2 rounded-lg ${isDark ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-600"}`} title="Download"
                 ><Download className="w-5 h-5" /></button>
                 <button onClick={() => handleDelete(file.id)} className={`p-2 rounded-lg ${isDark ? "hover:bg-red-900/30 text-red-400" : "hover:bg-red-50 text-red-600"}`} title="Delete"><Trash2 className="w-5 h-5" /></button>
