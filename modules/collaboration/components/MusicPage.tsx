@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, X, RefreshCw } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSongs, useUploadSong, useDeleteSong, useArtists } from "@/modules/collaboration/hooks/useMusic";
-import { Pagination } from "@/modules/shared/components/Pagination";
+import { SearchBar } from "@/modules/shared/components/SearchBar";
+import { DeleteConfirmationModal } from "@/modules/shared/components/DeleteConfirmationModal";
 
 interface MusicPageProps {
   isDark?: boolean;
@@ -16,39 +17,87 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
   const isDark = isDarkProp ?? resolvedTheme === "dark";
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [songToDelete, setSongToDelete] = useState<string | null>(null);
   const [songTitle, setSongTitle] = useState("");
-  const [page, setPage] = useState(1);
-  const limit = 10;
+  const [search, setSearch] = useState("");
+  const limit = 1000;
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [lyricsFile, setLyricsFile] = useState<File | null>(null);
-  const [lyricsError, setLyricsError] = useState("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [artistError, setArtistError] = useState(false);
   const [mp3Error, setMp3Error] = useState(false);
+  const [jsonError, setJsonError] = useState(false);
 
-  const { data, isLoading, isError, refetch } = useSongs({ page, limit });
+  const { data, isLoading, isError, refetch } = useSongs({ search, limit });
   const { data: artists = [] } = useArtists();
   const uploadSong = useUploadSong(false);
   const deleteSong = useDeleteSong(false);
 
   const [selectedArtistId, setSelectedArtistId] = useState<string>("");
+  const [album, setAlbum] = useState("");
+  const [genre, setGenre] = useState("");
 
   const songs = data?.data ?? [];
+
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (main) {
+      const originalMainClass = main.className;
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      
+      main.classList.add("!h-full", "!overflow-hidden", "!flex", "!flex-col", "!p-0");
+      
+      const mainColumn = main.parentElement;
+      if (mainColumn) {
+        mainColumn.classList.add("!h-screen", "!overflow-hidden");
+      }
+
+      return () => {
+        main.className = originalMainClass;
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        if (mainColumn) {
+          mainColumn.classList.remove("!h-screen", "!overflow-hidden");
+        }
+      };
+    }
+  }, []);
 
   const labelClass = `block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"
     }`;
 
+  const extractDuration = (file: File): Promise<number | null> =>
+    new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const audio = document.createElement("audio");
+      audio.preload = "metadata";
+      audio.onloadedmetadata = () => {
+        URL.revokeObjectURL(url);
+        resolve(isFinite(audio.duration) ? Math.round(audio.duration) : null);
+      };
+      audio.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      audio.src = url;
+    });
+
   const resetForm = () => {
     setSongTitle("");
-
     setSelectedArtistId("");
+    setAlbum("");
+    setGenre("");
     setAudioFile(null);
+    setAudioDuration(null);
     setLyricsFile(null);
-    setLyricsError("");
     setVideoFile(null);
     setArtistError(false);
     setMp3Error(false);
+    setJsonError(false);
   };
 
   const handleSave = async () => {
@@ -66,6 +115,9 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
         meta: {
           title: songTitle.trim(),
           musicArtistId: selectedArtistId,
+          album: album ? album : undefined,
+          genre: genre ? genre : undefined,
+          duration: audioDuration ?? undefined,
         },
       });
       resetForm();
@@ -75,11 +127,19 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteSong.mutateAsync(id);
-    } catch (err: unknown) {
-      console.error("[MusicPage] Delete error:", err);
+  const handleDelete = (id: string) => {
+    setSongToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (songToDelete) {
+      deleteSong.mutate(songToDelete, {
+        onSuccess: () => {
+          setIsDeleteModalOpen(false);
+          setSongToDelete(null);
+        },
+      });
     }
   };
 
@@ -91,75 +151,63 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
   };
 
   return (
-    <div>
-      {/* Header */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
-              Song Management
-            </h1>
-            <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-              Manage and upload songs to the platform
-            </p>
-          </div>
+    <div className="w-full flex-1 flex flex-col min-h-0 p-4 lg:p-8">
+      {/* Header & Stats — same layout as KaraokePage */}
+      <div className="flex flex-col lg:flex-row lg:items-end gap-6 mb-6">
+        {/* Action Button */}
+        <div className="shrink-0">
           <button
-            onClick={() => refetch()}
-            className={`p-2.5 rounded-xl border transition-colors ${isDark
-                ? "border-gray-700 hover:bg-gray-800 text-gray-400"
-                : "border-gray-200 hover:bg-gray-100 text-gray-600"
-              }`}
-            title="Refresh"
+            onClick={() => setShowAddModal(true)}
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white text-sm font-medium hover:opacity-90 flex items-center gap-2 transition-all shadow-md h-12"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            <Plus className="w-4 h-4" /> Add Song
           </button>
         </div>
-      </motion.div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[
-          { label: "Total Songs", value: data?.meta?.total ?? songs.length },
-          { label: "Active Tracks", value: songs.length },
-          { label: "Top Artist", value: songs[0]?.musicArtist?.name ?? "—" },
-          { label: "Last Uploaded", value: songs[0] ? new Date(songs[0].createdAt).toLocaleDateString() : "—" },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 * i }}
-            className={`p-6 rounded-xl border ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-              }`}
-          >
-            <p className={`text-sm mb-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-              {stat.label}
-            </p>
-            <p className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
-              {isLoading ? (
-                <span className={`inline-block h-7 w-16 rounded animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`} />
-              ) : (
-                stat.value
-              )}
-            </p>
-          </motion.div>
-        ))}
+        {/* Search Bar */}
+        <div className="flex-1 max-w-md">
+          <SearchBar
+            placeholder="Search for songs or artists..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+          />
+        </div>
+
+        {/* Compact Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-1">
+          {[
+            { label: "Total Songs",   value: data?.meta?.total ?? songs.length },
+            { label: "Active Tracks", value: songs.length },
+            { label: "Top Artist",    value: songs[0]?.musicArtist?.name ?? "—" },
+            { label: "Last Uploaded", value: songs[0] ? new Date(songs[0].createdAt).toLocaleDateString() : "—" },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.05 * i }}
+              className={`p-3.5 rounded-xl border ${
+                isDark ? "bg-gray-800/50 border-gray-700" : "bg-white border-gray-200"
+              } shadow-sm`}
+            >
+              <p className={`text-[10px] uppercase tracking-wider font-semibold mb-1 truncate ${
+                isDark ? "text-gray-400" : "text-gray-500"
+              }`}>
+                {stat.label}
+              </p>
+              <p className={`text-lg font-bold truncate ${isDark ? "text-white" : "text-gray-900"}`}>
+                {isLoading ? (
+                  <span className={`inline-block h-5 w-12 rounded animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`} />
+                ) : (
+                  stat.value
+                )}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
-      {/* Add Button */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#A53860] to-[#670D2F] text-white font-medium hover:opacity-90 flex items-center gap-2 transition-all"
-        >
-          <Plus className="w-4 h-4" /> Add Song
-        </button>
-      </div>
 
       {/* Error */}
       {isError && (
@@ -191,17 +239,15 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
           </p>
         </div>
       ) : (
-        <div className={`rounded-xl border overflow-hidden ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-          }`}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}>
+        <div className={`flex-1 min-h-0 rounded-xl border overflow-hidden shadow-sm flex flex-col ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+          <div className="overflow-y-auto flex-1">
+            <table className="w-full text-left border-collapse">
+              <thead className={`sticky top-0 z-10 ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
                 <tr>
                   {["Title", "Artist", "Album", "Genre", "Duration", "Actions"].map((h) => (
                     <th
                       key={h}
-                      className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"
-                        }`}
+                      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}
                     >
                       {h}
                     </th>
@@ -212,24 +258,24 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
                 {songs.map((song) => (
                   <tr
                     key={song.id}
-                    className={`group transition-colors ${isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"}`}
+                    className={`group transition-colors text-sm ${isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"}`}
                   >
-                    <td className={`px-6 py-4 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>
+                    <td className={`px-4 py-2.5 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>
                       {song.title}
                     </td>
-                    <td className={`px-6 py-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                    <td className={`px-4 py-2.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       {song.musicArtist?.name ?? "—"}
                     </td>
-                    <td className={`px-6 py-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                    <td className={`px-4 py-2.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       {song.musicAlbum?.album ?? "—"}
                     </td>
-                    <td className={`px-6 py-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                    <td className={`px-4 py-2.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       {song.musicAlbum?.genre ?? "—"}
                     </td>
-                    <td className={`px-6 py-4 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                    <td className={`px-4 py-2.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                       {formatDuration(song.duration)}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       <button
                         onClick={() => handleDelete(song.id)}
                         disabled={deleteSong.isPending}
@@ -244,13 +290,6 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
               </tbody>
             </table>
           </div>
-
-          <Pagination
-            currentPage={page}
-            totalPages={data?.meta?.totalPages ?? 1}
-            onPageChange={setPage}
-            isDark={isDark}
-          />
         </div>
       )}
 
@@ -270,7 +309,7 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className={`w-full max-w-lg rounded-2xl p-8 shadow-2xl ${isDark
+              className={`w-full max-w-2xl rounded-2xl p-8 shadow-2xl ${isDark
                   ? "bg-[#1a2035] border border-gray-700/50"
                   : "bg-white border border-gray-200"
                 }`}
@@ -335,6 +374,39 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className={labelClass}>
+                      Album (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Be"
+                      value={album}
+                      onChange={(e) => setAlbum(e.target.value)}
+                      className={`w-full h-11 px-4 rounded-xl border text-sm outline-none transition-all ${isDark
+                          ? "bg-[#243050] border-gray-600/50 text-white placeholder-gray-500 focus:border-[#A53860]"
+                          : "bg-gray-50 border-gray-200 text-gray-900 focus:border-[#A53860]"
+                        } focus:ring-2 focus:ring-[#A53860]/10`}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>
+                      Genre (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Pop, R&B"
+                      value={genre}
+                      onChange={(e) => setGenre(e.target.value)}
+                      className={`w-full h-11 px-4 rounded-xl border text-sm outline-none transition-all ${isDark
+                          ? "bg-[#243050] border-gray-600/50 text-white placeholder-gray-500 focus:border-[#A53860]"
+                          : "bg-gray-50 border-gray-200 text-gray-900 focus:border-[#A53860]"
+                        } focus:ring-2 focus:ring-[#A53860]/10`}
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className={labelClass}>
                     Upload Audio File <span className="text-red-500">*</span>
@@ -349,17 +421,24 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
                       type="file"
                       accept=".mp3,audio/mpeg"
                       className="sr-only"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0] ?? null;
                         if (file && !file.name.toLowerCase().endsWith(".mp3")) {
                           e.target.value = "";
                           setAudioFile(null);
+                          setAudioDuration(null);
                           setMp3Error(true);
                           setTimeout(() => setMp3Error(false), 4000);
                           return;
                         }
                         setMp3Error(false);
                         setAudioFile(file);
+                        if (file) {
+                          const dur = await extractDuration(file);
+                          setAudioDuration(dur);
+                        } else {
+                          setAudioDuration(null);
+                        }
                       }}
                     />
                     {audioFile ? (
@@ -404,78 +483,107 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
 
                 {/* Lyrics File */}
                 <div>
-                  <label className="text-sm font-semibold mb-2 block text-white">
-                    Upload Lyrics File (JSON) <span className="text-[#A53860]">*</span>
+                  <label className={labelClass}>
+                    Upload Lyrics File (JSON) <span className="text-red-500">*</span>
                   </label>
-                  <div className={`flex items-center gap-3 h-12 px-4 rounded-xl border transition-all ${lyricsFile
-                      ? "border-[#A53860] bg-[#A53860]/10"
-                      : isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-gray-50"
+                  <div className="relative">
+                    <label className={`flex items-center w-full h-11 px-4 rounded-xl border text-sm cursor-pointer transition-all ${
+                      isDark
+                        ? "bg-[#243050] border-gray-600/50 text-gray-400 hover:border-[#A53860]/50"
+                        : "bg-gray-50 border-gray-200 text-gray-500 hover:border-[#A53860]/50"
                     }`}>
-                    {!lyricsFile ? (
-                      <label className="flex items-center gap-3 cursor-pointer w-full">
-                        <span className="text-sm text-gray-400 font-medium">Choose file</span>
-                        <span className="text-sm text-gray-500">No file chosen</span>
-                        <input
-                          type="file"
-                          accept=".json"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file && !file.name.toLowerCase().endsWith(".json")) {
-                              setLyricsError("Only .json files are accepted");
-                              setTimeout(() => setLyricsError(""), 4000);
-                              return;
-                            }
-                            setLyricsFile(file || null);
-                          }}
-                        />
-                      </label>
-                    ) : (
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-sm text-white truncate">{lyricsFile.name}</span>
-                        <button onClick={() => setLyricsFile(null)} className="text-gray-400 hover:text-white transition-colors">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
+                      <input
+                        type="file"
+                        accept=".json,application/json"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] ?? null;
+                          if (file && !file.name.toLowerCase().endsWith(".json")) {
+                            e.target.value = "";
+                            setLyricsFile(null);
+                            setJsonError(true);
+                            setTimeout(() => setJsonError(false), 4000);
+                            return;
+                          }
+                          setJsonError(false);
+                          setLyricsFile(file);
+                        }}
+                      />
+                      {lyricsFile ? (
+                        <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                          {lyricsFile.name}
+                        </span>
+                      ) : (
+                        <>
+                          <span className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Choose file</span>
+                          <span className={`ml-2 text-sm ${isDark ? "text-gray-600" : "text-gray-400"}`}>No .json file chosen</span>
+                        </>
+                      )}
+                    </label>
+                    {lyricsFile && (
+                      <button
+                        type="button"
+                        onClick={() => setLyricsFile(null)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-red-500/20 transition-colors"
+                      >
+                        <X className={`w-4 h-4 ${isDark ? "text-gray-400 hover:text-red-400" : "text-gray-500 hover:text-red-500"}`} />
+                      </button>
                     )}
                   </div>
-                  {lyricsError && <p className="text-xs text-red-400 mt-1">{lyricsError}</p>}
-                  {!lyricsError && <p className="text-xs text-gray-500 mt-1">Only .json files are accepted</p>}
+                  <p className={`text-xs mt-1.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                    Only .json files are accepted
+                  </p>
+                  {jsonError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-xs mt-1 text-red-500 font-medium flex items-center gap-1"
+                    >
+                      ✕ Invalid file type. Please upload a JSON file only.
+                    </motion.p>
+                  )}
                 </div>
 
                 {/* Background Video */}
                 <div>
-                  <label className="text-sm font-semibold mb-2 block text-white">
-                    Upload Background Video
-                  </label>
-                  <div className={`flex items-center gap-3 h-12 px-4 rounded-xl border transition-all ${videoFile
-                      ? "border-[#A53860] bg-[#A53860]/10"
-                      : isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-gray-50"
+                  <label className={labelClass}>Upload Background Video (Optional)</label>
+                  <div className="relative">
+                    <label className={`flex items-center w-full h-11 px-4 rounded-xl border text-sm cursor-pointer transition-all ${
+                      isDark
+                        ? "bg-[#243050] border-gray-600/50 text-gray-400 hover:border-[#A53860]/50"
+                        : "bg-gray-50 border-gray-200 text-gray-500 hover:border-[#A53860]/50"
                     }`}>
-                    {!videoFile ? (
-                      <label className="flex items-center gap-3 cursor-pointer w-full">
-                        <span className="text-sm text-gray-400 font-medium">Choose file</span>
-                        <span className="text-sm text-gray-500">No file chosen</span>
-                        <input
-                          type="file"
-                          accept=".mp4,.mov,.webm"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            setVideoFile(file || null);
-                          }}
-                        />
-                      </label>
-                    ) : (
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-sm text-white truncate">{videoFile.name}</span>
-                        <button onClick={() => setVideoFile(null)} className="text-gray-400 hover:text-white transition-colors">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        className="sr-only"
+                        onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+                      />
+                      {videoFile ? (
+                        <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                          {videoFile.name}
+                        </span>
+                      ) : (
+                        <>
+                          <span className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Choose file</span>
+                          <span className={`ml-2 text-sm ${isDark ? "text-gray-600" : "text-gray-400"}`}>No file chosen</span>
+                        </>
+                      )}
+                    </label>
+                    {videoFile && (
+                      <button
+                        type="button"
+                        onClick={() => setVideoFile(null)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-red-500/20 transition-colors"
+                      >
+                        <X className={`w-4 h-4 ${isDark ? "text-gray-400 hover:text-red-400" : "text-gray-500 hover:text-red-500"}`} />
+                      </button>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Accepted: .mp4, .mov, .webm</p>
+                  <p className={`text-xs mt-1.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                    Accepted: .mp4, .mov, .webm
+                  </p>
                 </div>
 
                 {uploadSong.isError && (
@@ -508,6 +616,16 @@ export const MusicPage = ({ isDark: isDarkProp }: MusicPageProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteSong.isPending}
+        isDark={isDark}
+        title="Delete Song"
+        description={`Are you sure you want to delete ${songs.find(s => s.id === songToDelete)?.title ?? "this song"}? This will remove it from the library.`}
+      />
     </div>
   );
 };

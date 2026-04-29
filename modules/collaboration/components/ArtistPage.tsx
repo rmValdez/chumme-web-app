@@ -4,10 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, X, Upload, Edit, Trash2, Music } from "lucide-react";
 import Image from "next/image";
-import { useArtists } from "@/modules/collaboration/hooks/useMusic";
+import { useArtists, useCreateArtist, useUpdateArtist, useDeleteArtist } from "@/modules/collaboration/hooks/useMusic";
 import { Pagination } from "@/modules/shared/components/Pagination";
+import { DeleteConfirmationModal } from "@/modules/shared/components/DeleteConfirmationModal";
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
 
 interface Artist {
   id: string;
@@ -23,29 +23,28 @@ const ArtistPage = () => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  const { data: backendArtists = [], isLoading } = useArtists();
-  const [artists, setArtists] = useState<Artist[]>([]);
+  const { data: fetchedArtists = [], isLoading } = useArtists();
+  const createArtist = useCreateArtist();
+  const updateArtist = useUpdateArtist();
+  const deleteArtist = useDeleteArtist();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [artistToDelete, setArtistToDelete] = useState<string | null>(null);
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
   const [formData, setFormData] = useState({ name: "", genre: "", description: "", imageUrl: "" });
 
   const [page, setPage] = useState(1);
   const limit = 6;
 
-  useEffect(() => {
-    if (Array.isArray(backendArtists) && backendArtists.length > 0) {
-      // Map backend data to local Artist interface
-      const mapped = backendArtists.map(a => ({
-        id: a.id || Math.random().toString(),
-        name: a.name || "Unknown Artist",
-        genre: "", 
-        description: "",
-        imageUrl: a.imageUrl || undefined
-      }));
-      setArtists(mapped);
-    }
-  }, [backendArtists]);
+  const artists: Artist[] = fetchedArtists.map(fetchedArtist => ({
+    id: fetchedArtist.id,
+    name: fetchedArtist.name || "Unknown Artist",
+    genre: ((fetchedArtist as unknown as Record<string, unknown>).genre as string) || "", 
+    description: ((fetchedArtist as unknown as Record<string, unknown>).bio as string) || "",
+    imageUrl: fetchedArtist.imageUrl || undefined
+  }));
 
   const handleOpenModal = (artist?: Artist) => {
     if (artist) {
@@ -66,22 +65,45 @@ const ArtistPage = () => {
 
   const handleSaveArtist = () => {
     if (!formData.name.trim()) return;
+    
+    const payload = {
+      name: formData.name,
+      platform: "YOUTUBE", // Required by backend
+      bio: formData.description,
+      imageUrl: formData.imageUrl,
+      genre: formData.genre,
+    };
+
     if (editingArtist) {
-      setArtists((prev) => prev.map((a) => (a.id === editingArtist.id ? { ...a, ...formData } : a)));
+      updateArtist.mutate(
+        { id: editingArtist.id, data: payload },
+        { onSuccess: handleCloseModal }
+      );
     } else {
-      setArtists((prev) => [...prev, { id: Date.now().toString(), ...formData }]);
+      createArtist.mutate(payload, { onSuccess: handleCloseModal });
     }
-    handleCloseModal();
   };
 
   const handleDeleteArtist = (id: string) => {
-    setArtists((prev) => prev.filter((a) => a.id !== id));
+    setArtistToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (artistToDelete) {
+      deleteArtist.mutate(artistToDelete, {
+        onSuccess: () => {
+          setIsDeleteModalOpen(false);
+          setArtistToDelete(null);
+        },
+      });
+    }
   };
 
   const filteredArtists = artists.filter(
-    (a) =>
-      a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.genre.toLowerCase().includes(searchQuery.toLowerCase())
+    (artist) =>
+      artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      artist.genre.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredArtists.length / limit);
@@ -95,28 +117,30 @@ const ArtistPage = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Artists</h1>
           <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">Manage your music artists</p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold px-6 h-11 rounded-xl transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          Add Artist
-        </button>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search artists by name or genre..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 rounded-xl text-sm focus:border-[#A53860] focus:ring-1 focus:ring-[#A53860] transition-all outline-none"
-          />
+      {/* Search and Add Artist Section */}
+          <div className="mb-6 flex flex-col sm:flex-row items-center gap-3">
+            {/* Search Input Container */}
+            <div className="relative flex-1 w-full max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search artists by name or genre..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-12 pl-12 pr-4 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500 rounded-xl text-sm focus:border-[#A53860] focus:ring-1 focus:ring-[#A53860] transition-all outline-none"
+              />
+            </div>
+          {/* Add Artist Button */}
+          <button
+            onClick={() => handleOpenModal()}
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#A53860] to-[#670D2F] hover:opacity-90 text-white font-semibold px-6 h-11 rounded-xl transition-all w-full sm:w-auto whitespace-nowrap"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add Artist</span>
+          </button>
         </div>
-      </div>
 
       {/* Artist Grid or Empty State */}
       {isLoading ? (
@@ -207,7 +231,6 @@ const ArtistPage = () => {
               </motion.div>
             ))}
           </div>
-
           <Pagination
             currentPage={page}
             totalPages={totalPages}
@@ -311,6 +334,16 @@ const ArtistPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteArtist.isPending}
+        isDark={isDark}
+        title="Delete Artist"
+        description={`Are you sure you want to delete ${artists.find(a => a.id === artistToDelete)?.name ?? "this artist"}? This will remove all their associated data.`}
+      />
     </div>
   );
 };
