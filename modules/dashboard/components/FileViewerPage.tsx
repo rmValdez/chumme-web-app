@@ -12,7 +12,7 @@ import { useTheme } from "next-themes";
 import { useSnackbar } from "@/modules/shared/hooks/useSnackbar";
 import { Snackbar } from "@/modules/shared/components/Snackbar";
 import { DeleteConfirmationModal } from "@/modules/shared/components/DeleteConfirmationModal";
-import { useFiles, useUploadFile, useDeleteFile, useFileDownloadUrl } from "../hooks/useFiles";
+import { useFiles, useUploadFile, useDeleteFile } from "../hooks/useFiles";
 import { FileRecord } from "../api/file.service";
 
 const CACHE_KEY = "chumme_file_cache";
@@ -38,7 +38,6 @@ const FileViewerPage = () => {
   const { data: apiFiles = [], isLoading } = useFiles();
   const uploadMutation = useUploadFile();
   const deleteMutation = useDeleteFile();
-  const downloadMutation = useFileDownloadUrl();
 
   const [mounted, setMounted] = useState(false);
   const [localFiles, setLocalFiles] = useState<FileRecord[]>([]);
@@ -373,6 +372,7 @@ const FileViewerPage = () => {
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setPreviewFile(null)} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50" />
             <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+
               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className={`border shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col rounded-2xl ${isDark ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`} onClick={(e) => e.stopPropagation()}>
                 <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-gray-700" : "border-gray-200"}`}>
                   <div className="min-w-0 flex-1">
